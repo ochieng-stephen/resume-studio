@@ -1,0 +1,15 @@
+{
+  "name": "",
+  "role": "",
+  "location": "",
+  "email": "",
+  "targetRoles": [],
+  "searchParameters": {
+    "locationPreference": "Remote-first",
+    "employmentType": ["full-time", "contract"],
+    "seniority": "",
+    "platforms": ["LinkedIn", "company career pages", "remote job boards"]
+  },
+  "coreStack": [],
+  "differentiators": []
+}
