@@ -1,0 +1,16 @@
+{
+  "outputStyle": "Job Search",
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch",
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(mkdir *)",
+      "Bash(python3 *)"
+    ]
+  }
+}
