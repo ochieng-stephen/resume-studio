@@ -19,6 +19,7 @@ import { humanizeFilename } from "../lib/humanizeFilename";
 import { buildTemplateStarter, uniqueTemplateFilename } from "../lib/newTemplate";
 import { ProfileEditor } from "./ProfileEditor";
 import { PromptModal } from "./PromptModal";
+import { SlashCommandGuide } from "./SlashCommandGuide";
 
 interface DirEntryInfo {
   name: string;
@@ -230,6 +231,8 @@ export function SimpleWorkspaceView() {
         <QuickTool icon={Sparkles} label="Snippets" onClick={openSnippetsTab} />
         <QuickTool icon={Search} label="Search" onClick={openSearchTab} />
       </div>
+
+      <SlashCommandGuide />
 
       <ProfileEditor rootPath={rootPath} />
 
