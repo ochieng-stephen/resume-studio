@@ -33,6 +33,11 @@ pub fn pty_spawn(
     let shell = std::env::var("SHELL").unwrap_or_else(|_| "/bin/zsh".to_string());
     let mut cmd = CommandBuilder::new(shell);
     cmd.arg("-il");
+    // The app bundle has no controlling terminal, so TERM isn't inherited from
+    // the environment like it is under `tauri dev` — without it, the shell's
+    // line editor can't resolve terminal capabilities (e.g. backspace/delete
+    // redraw incorrectly).
+    cmd.env("TERM", "xterm-256color");
     if let Some(dir) = cwd {
         cmd.cwd(dir);
     }
