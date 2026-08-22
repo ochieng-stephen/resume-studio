@@ -5,6 +5,7 @@ import { Sidebar } from "./components/Sidebar";
 import { EditorArea } from "./components/EditorArea";
 import { PreviewPanel } from "./components/PreviewPanel";
 import { TerminalPanel } from "./components/TerminalPanel";
+import { ResizeHandle } from "./components/ResizeHandle";
 import { FileContextMenu } from "./components/FileContextMenu";
 import { CommandPalette } from "./components/CommandPalette";
 import { ComparePicker } from "./components/ComparePicker";
@@ -21,9 +22,16 @@ function App() {
     sidebarVisible,
     terminalVisible,
     previewVisible,
+    terminalHeight,
     toggleSidebar,
     toggleTerminal,
     togglePreview,
+    resizeSidebar,
+    resizePreview,
+    resizeTerminal,
+    resetSidebarWidth,
+    resetPreviewWidth,
+    resetTerminalHeight,
   } = useUIStore();
   const theme = useSettingsStore((s) => s.theme);
 
@@ -66,15 +74,36 @@ function App() {
     <div className="flex h-screen w-screen flex-col">
       <TitleBar />
       <div className="flex flex-1 overflow-hidden">
-        {sidebarVisible && <Sidebar />}
+        {sidebarVisible && (
+          <>
+            <Sidebar />
+            <ResizeHandle orientation="vertical" onResize={resizeSidebar} onReset={resetSidebarWidth} />
+          </>
+        )}
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="flex flex-1 overflow-hidden">
             <EditorArea />
-            {previewVisible && <PreviewPanel />}
+            {previewVisible && (
+              <>
+                <ResizeHandle
+                  orientation="vertical"
+                  onResize={(d) => resizePreview(-d)}
+                  onReset={resetPreviewWidth}
+                />
+                <PreviewPanel />
+              </>
+            )}
           </div>
-          <div className={terminalVisible ? "flex shrink-0 flex-col" : "hidden"}>
-            <TerminalPanel />
-          </div>
+          {terminalVisible && (
+            <div style={{ height: terminalHeight }} className="flex shrink-0 flex-col">
+              <ResizeHandle
+                orientation="horizontal"
+                onResize={(d) => resizeTerminal(-d)}
+                onReset={resetTerminalHeight}
+              />
+              <TerminalPanel />
+            </div>
+          )}
         </div>
       </div>
       <FileContextMenu />
