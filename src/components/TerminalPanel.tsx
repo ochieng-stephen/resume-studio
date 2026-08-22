@@ -44,7 +44,7 @@ export function TerminalPanel() {
   };
 
   return (
-    <div className="flex h-56 shrink-0 flex-col border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+    <div className="flex min-h-0 flex-1 flex-col bg-[var(--color-bg-secondary)]">
       <div className="flex h-8 shrink-0 items-center justify-between border-b border-[var(--color-border)] px-1">
         <div className="flex h-full items-center overflow-x-auto">
           {tabs.map((tab) => (

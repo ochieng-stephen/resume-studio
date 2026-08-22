@@ -2,6 +2,7 @@ import { useWorkspaceStore } from "../store/workspaceStore";
 import { useTreeStore } from "../store/treeStore";
 import { useTabsStore } from "../store/tabsStore";
 import { useExplorerModeStore } from "../store/explorerModeStore";
+import { useUIStore } from "../store/uiStore";
 import { FileTree } from "./FileTree";
 import { SimpleWorkspaceView } from "./SimpleWorkspaceView";
 
@@ -12,11 +13,15 @@ export function Sidebar() {
   const openTrackerTab = useTabsStore((s) => s.openTrackerTab);
   const mode = useExplorerModeStore((s) => s.mode);
   const setMode = useExplorerModeStore((s) => s.setMode);
+  const sidebarWidth = useUIStore((s) => s.sidebarWidth);
 
   const rootName = rootPath ? (rootPath.split("/").filter(Boolean).pop() ?? rootPath) : null;
 
   return (
-    <aside className="flex w-72 shrink-0 flex-col border-r border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+    <aside
+      style={{ width: sidebarWidth }}
+      className="flex shrink-0 flex-col bg-[var(--color-bg-secondary)]"
+    >
       <div className="flex items-center justify-between border-b border-[var(--color-border)] px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
         <span className="truncate">{rootName ?? "Workspace"}</span>
         {rootPath && (
