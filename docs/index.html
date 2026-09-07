@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Résumé Studio</title>
+<meta name="description" content="A native macOS résumé and cover letter editor with an AI coding agent built into the terminal." />
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-secondary: #f3f3f3;
+    --surface: rgba(0, 0, 0, 0.03);
+    --surface-border: rgba(0, 0, 0, 0.1);
+    --text: #1e1e1e;
+    --text-muted: #6e6e6e;
+    --accent: #2563eb;
+    --accent-ink: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1e1e1e;
+      --bg-secondary: #181818;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface-border: rgba(255, 255, 255, 0.1);
+      --text: #d4d4d4;
+      --text-muted: #8a8a8a;
+      --accent: #3b82f6;
+      --accent-ink: #ffffff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+
+  header.hero {
+    position: relative;
+    padding: 96px 0 64px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .glow {
+    position: absolute;
+    top: -120px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 640px;
+    height: 480px;
+    background: radial-gradient(ellipse at center, color-mix(in srgb, var(--accent) 20%, transparent) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .icon {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    border-radius: 22px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  }
+  h1 {
+    position: relative;
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 24px 0 8px;
+  }
+  .tagline {
+    position: relative;
+    font-size: 18px;
+    color: var(--text-muted);
+    max-width: 480px;
+    margin: 0 auto 32px;
+    line-height: 1.5;
+  }
+
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 35%, transparent); }
+  .btn:active { transform: translateY(0); }
+  .meta {
+    position: relative;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .meta a { color: var(--text-muted); }
+
+  section { padding: 48px 0; border-top: 1px solid var(--surface-border); }
+  h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin: 0 0 24px;
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .feature {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .feature h3 { font-size: 15px; font-weight: 600; margin: 0 0 6px; }
+  .feature p { font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin: 0; }
+
+  .steps {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: 12px;
+    padding: 4px 22px;
+  }
+  .steps ol { margin: 0; padding-left: 20px; }
+  .steps li { padding: 14px 0; font-size: 14.5px; line-height: 1.6; }
+  .steps li:not(:last-child) { border-bottom: 1px solid var(--surface-border); }
+  .steps code {
+    background: var(--bg-secondary);
+    border: 1px solid var(--surface-border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 13px;
+  }
+  .note {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+
+  footer {
+    padding: 32px 0 64px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  footer a { color: var(--text-muted); }
+
+  @media (max-width: 520px) {
+    .features { grid-template-columns: 1fr; }
+    header.hero { padding: 64px 0 48px; }
+    h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="glow"></div>
+  <img class="icon" src="icon.png" alt="Résumé Studio icon" width="96" height="96" />
+  <h1>Résumé Studio</h1>
+  <p class="tagline">A native macOS editor for résumés and cover letters, with an AI coding agent built into the terminal — it can read, edit, and version your documents directly.</p>
+  <a class="btn" href="https://github.com/ochieng-stephen/resume-studio/releases/download/v0.1.0/Resume.Studio_0.1.0_aarch64.dmg">
+    Download for macOS
+  </a>
+  <p class="meta">v0.1.0 · Apple Silicon · <a href="https://github.com/ochieng-stephen/resume-studio/releases">all releases</a></p>
+</header>
+
+<div class="wrap">
+
+<section>
+  <h2>What it does</h2>
+  <div class="features">
+    <div class="feature">
+      <h3>IDE-style workspace</h3>
+      <p>File sidebar, multi-tab Markdown editor, live preview, and a terminal — all in one resizable layout.</p>
+    </div>
+    <div class="feature">
+      <h3>An AI agent in the loop</h3>
+      <p>A real terminal wired into your workspace, with one-click presets to launch an AI agent and a slash-command guide for structured tasks.</p>
+    </div>
+    <div class="feature">
+      <h3>Simple or advanced</h3>
+      <p>A guided view for quick edits, or a full file-tree view for browsing the raw workspace like any other project.</p>
+    </div>
+    <div class="feature">
+      <h3>Export-ready</h3>
+      <p>Live Markdown preview with one-click PDF and DOCX export, plus git-backed version history.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Opening the app</h2>
+  <div class="steps">
+    <ol>
+      <li>This build is signed but not <strong>notarized</strong> — that costs an Apple Developer Program membership ($99/yr), which this personal project doesn't have. macOS will still flag it as being from an unidentified developer the first time you open it. Here's how to get past that, once.</li>
+      <li>Open the downloaded <code>.dmg</code> and drag <strong>Résumé Studio</strong> into Applications.</li>
+      <li>Try opening it normally first. If you get a warning dialog, go to <strong>System Settings → Privacy &amp; Security</strong>, scroll down, and you'll see "Résumé Studio was blocked." Click <strong>Open Anyway</strong>, then confirm on the next prompt.</li>
+      <li>From then on it opens normally, like any other app.</li>
+    </ol>
+  </div>
+  <p class="note">This is standard for any app distributed outside the Mac App Store without a paid developer account — it's not specific to this app, and it's a one-time step.</p>
+</section>
+
+</div>
+
+<footer>
+  <a href="https://github.com/ochieng-stephen/resume-studio">Source on GitHub</a>
+</footer>
+
+</body>
+</html>
