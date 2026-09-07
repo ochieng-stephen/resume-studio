@@ -30,7 +30,7 @@ Gatekeeper will flag it as being from an unidentified developer. See the
 to open it anyway — it's a couple of clicks, not a workaround you need to be
 technical for.
 
-Requires Apple Silicon (M1 or later). No Intel/universal build yet.
+Universal build — runs natively on both Apple Silicon and Intel Macs.
 
 ## Development
 
