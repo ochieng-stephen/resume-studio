@@ -30,9 +30,17 @@ pub fn pty_spawn(
         })
         .map_err(|e| e.to_string())?;
 
-    let shell = std::env::var("SHELL").unwrap_or_else(|_| "/bin/zsh".to_string());
+    let shell = if cfg!(target_os = "windows") {
+        "powershell.exe".to_string()
+    } else {
+        std::env::var("SHELL").unwrap_or_else(|_| "/bin/zsh".to_string())
+    };
     let mut cmd = CommandBuilder::new(shell);
-    cmd.arg("-il");
+    if !cfg!(target_os = "windows") {
+        // -il: interactive login shell, so profile/rc files load. No equivalent
+        // concept on Windows shells.
+        cmd.arg("-il");
+    }
     // The app bundle has no controlling terminal, so TERM isn't inherited from
     // the environment like it is under `tauri dev` — without it, the shell's
     // line editor can't resolve terminal capabilities (e.g. backspace/delete
