@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Résumé Studio</title>
-<meta name="description" content="A native macOS résumé and cover letter editor with an AI coding agent built into the terminal." />
+<meta name="description" content="A native résumé and cover letter editor for macOS and Windows, with an AI coding agent built into the terminal." />
 <style>
   :root {
     --bg: #ffffff;
@@ -77,23 +77,35 @@
     line-height: 1.5;
   }
 
-  .btn {
+  .downloads {
     position: relative;
+    display: inline-flex;
+    gap: 10px;
+  }
+  .btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: var(--accent);
-    color: var(--accent-ink);
     font-size: 15px;
     font-weight: 600;
     text-decoration: none;
-    padding: 12px 24px;
+    padding: 12px 22px;
     border-radius: 10px;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn:active { transform: translateY(0); }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-ink);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
-  .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 35%, transparent); }
-  .btn:active { transform: translateY(0); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 35%, transparent); }
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--surface-border);
+  }
+  .btn-secondary:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--accent) 50%, var(--surface-border)); }
   .meta {
     position: relative;
     margin-top: 14px;
@@ -170,12 +182,27 @@
   <div class="glow"></div>
   <img class="icon" src="icon.png" alt="Résumé Studio icon" width="96" height="96" />
   <h1>Résumé Studio</h1>
-  <p class="tagline">A native macOS editor for résumés and cover letters, with an AI coding agent built into the terminal — it can read, edit, and version your documents directly.</p>
-  <a class="btn" href="https://github.com/ochieng-stephen/resume-studio/releases/download/v0.1.0/Resume.Studio_0.1.0_universal.dmg">
-    Download for macOS
-  </a>
-  <p class="meta">v0.1.0 · Universal (Apple Silicon &amp; Intel) · <a href="https://github.com/ochieng-stephen/resume-studio/releases">all releases</a></p>
+  <p class="tagline">A native desktop editor for résumés and cover letters, with an AI coding agent built into the terminal — it can read, edit, and version your documents directly.</p>
+  <div class="downloads" id="downloads">
+    <a id="dl-mac" class="btn btn-primary" href="https://github.com/ochieng-stephen/resume-studio/releases/download/v0.1.0/Resume.Studio_0.1.0_universal.dmg">
+      Download for macOS
+    </a>
+    <a id="dl-win" class="btn btn-secondary" href="https://github.com/ochieng-stephen/resume-studio/releases/download/v0.1.0/Resume.Studio_0.1.0_x64-setup.exe">
+      Download for Windows
+    </a>
+  </div>
+  <p class="meta">v0.1.0 · macOS: Universal (Apple Silicon &amp; Intel) · Windows: x64 · <a href="https://github.com/ochieng-stephen/resume-studio/releases">all releases</a></p>
 </header>
+<script>
+  if (/Win/.test(navigator.userAgent)) {
+    document.getElementById("dl-mac").className = "btn btn-secondary";
+    document.getElementById("dl-win").className = "btn btn-primary";
+    document.getElementById("downloads").insertBefore(
+      document.getElementById("dl-win"),
+      document.getElementById("dl-mac")
+    );
+  }
+</script>
 
 <div class="wrap">
 
@@ -202,7 +229,7 @@
 </section>
 
 <section>
-  <h2>Opening the app</h2>
+  <h2>Opening the app on macOS</h2>
   <div class="steps">
     <ol>
       <li>This build is signed but not <strong>notarized</strong> — that costs an Apple Developer Program membership ($99/yr), which this personal project doesn't have. macOS will still flag it as being from an unidentified developer the first time you open it. Here's how to get past that, once.</li>
@@ -212,6 +239,19 @@
     </ol>
   </div>
   <p class="note">This is standard for any app distributed outside the Mac App Store without a paid developer account — it's not specific to this app, and it's a one-time step.</p>
+</section>
+
+<section>
+  <h2>Opening the app on Windows</h2>
+  <div class="steps">
+    <ol>
+      <li>Same story as macOS: no code-signing certificate ($200-500/yr for one trusted by Windows out of the box), so Windows SmartScreen will flag the installer as unrecognized. Here's how to get past that, once.</li>
+      <li>Run the downloaded <code>.exe</code>. You'll see a blue "Windows protected your PC" screen.</li>
+      <li>Click <strong>More info</strong>, then click the <strong>Run anyway</strong> button that appears.</li>
+      <li>The installer runs normally from then on, and so does the app.</li>
+    </ol>
+  </div>
+  <p class="note">Same caveat as macOS — this is a limitation of self-distributing outside an app store without a paid signing certificate, not a bug in the app itself.</p>
 </section>
 
 </div>
