@@ -16,6 +16,9 @@ dist-ssr
 src-tauri/target
 src-tauri/gen
 
+# Local planning notes
+tasks/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
