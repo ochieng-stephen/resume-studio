@@ -12,6 +12,7 @@ export function TerminalPanel() {
   const addTab = useTerminalStore((s) => s.addTab);
   const closeTab = useTerminalStore((s) => s.closeTab);
   const setActive = useTerminalStore((s) => s.setActive);
+  const markAgentLaunched = useTerminalStore((s) => s.markAgentLaunched);
   const [agentMenuOpen, setAgentMenuOpen] = useState(false);
   const [customAgent, setCustomAgent] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
@@ -35,6 +36,7 @@ export function TerminalPanel() {
   const launchAgent = (command: string) => {
     if (!activeId || !command.trim()) return;
     invoke("pty_write", { id: activeId, data: `${command.trim()}\n` }).catch(() => {});
+    markAgentLaunched(activeId);
     setAgentMenuOpen(false);
     setCustomAgent("");
   };

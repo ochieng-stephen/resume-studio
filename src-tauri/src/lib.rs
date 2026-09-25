@@ -105,6 +105,7 @@ pub fn run() {
             fs_commands::reveal_in_finder,
             fs_commands::search_workspace,
             pty::pty_spawn,
+            pty::pty_is_ready,
             pty::pty_write,
             pty::pty_resize,
             pty::pty_kill,

@@ -117,6 +117,14 @@ pub fn pty_spawn(
     Ok(())
 }
 
+/// Whether a PTY session exists yet. The session is created asynchronously when the
+/// terminal view mounts, so callers that write right after opening a terminal must wait
+/// for this before their input is delivered (writes to a missing session are dropped).
+#[tauri::command]
+pub fn pty_is_ready(id: String, state: State<PtyState>) -> bool {
+    state.0.lock().unwrap().contains_key(&id)
+}
+
 #[tauri::command]
 pub fn pty_write(id: String, data: String, state: State<PtyState>) -> Result<(), String> {
     let mut sessions = state.0.lock().unwrap();

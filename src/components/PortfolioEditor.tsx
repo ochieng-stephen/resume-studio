@@ -17,7 +17,7 @@ import {
   normalizePortfolio,
   slugId,
 } from "../lib/portfolio";
-import { sendToAgent } from "../lib/agentBridge";
+import { launchAgentAndSend } from "../lib/agentBridge";
 import { TagListInput } from "./TagListInput";
 
 export function PortfolioEditor({ rootPath }: { rootPath: string }) {
@@ -103,7 +103,7 @@ export function PortfolioEditor({ rootPath }: { rootPath: string }) {
                 tailoring CVs and cover letters.
               </p>
               <button
-                onClick={() => sendToAgent("/portfolio import ")}
+                onClick={() => launchAgentAndSend("/portfolio import ")}
                 className="flex items-center justify-center gap-1.5 rounded-md bg-[var(--color-bg-tertiary)] px-2 py-1.5 text-[11px] font-medium text-[var(--color-text)] hover:opacity-80"
               >
                 <Sparkles size={12} /> Build from my CV
@@ -233,7 +233,7 @@ export function PortfolioEditor({ rootPath }: { rootPath: string }) {
                   <Plus size={11} /> Add project
                 </button>
                 <button
-                  onClick={() => sendToAgent("/portfolio import ")}
+                  onClick={() => launchAgentAndSend("/portfolio import ")}
                   title="Have the agent extract projects from your CVs"
                   className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text)]"
                 >
