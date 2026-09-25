@@ -12,6 +12,9 @@ Optimize the candidate's CV or resume for a specific role.
 ## Source CVs
 !`ls -la my-current-cvs/ my-current-resumes/ 2>/dev/null`
 
+## Portfolio evidence
+!`cat portfolio/index.json 2>/dev/null || echo "No portfolio yet — suggest /portfolio import to build one from the CVs."`
+
 ## Steps
 
 1. **Get the job details**: If `$ARGUMENTS` is a URL, fetch the job description. If it's text,
@@ -28,6 +31,9 @@ Optimize the candidate's CV or resume for a specific role.
 3. **Analyze gaps and strengths**:
    - Which of the candidate's skills directly match requirements?
    - Which transferable skills map to their needs?
+   - Which **portfolio items** (from the evidence above) are most relevant? Pick the entries
+     whose `skills`/`keywords` overlap the JD, and plan to surface their real `outcomes`/`links`.
+     Respect any `confidential` item — use its outcomes, but never expose its `org` or `links`.
    - What keywords from the JD should be mirrored?
    - What should be reordered to front-load relevance?
 
@@ -38,7 +44,7 @@ Optimize the candidate's CV or resume for a specific role.
    - Quantify achievements where possible
 
 5. **Present changes**: Show a summary of what was changed and why, with before/after for
-   significant edits.
+   significant edits. Note which portfolio items (by `id`) you drew evidence from.
 
 6. **Save**: Write to `generated/tailored-cvs/{company}-{role}-{date}.md` or
    `generated/tailored-resumes/{company}-{role}-{date}.md`
@@ -47,5 +53,6 @@ Optimize the candidate's CV or resume for a specific role.
 
 ## Rules
 - Never fabricate experience or skills
-- Only reframe and emphasize what genuinely exists
+- Only reframe and emphasize what genuinely exists — portfolio evidence is the source of truth
+- If the portfolio is empty or thin for this role, suggest `/portfolio import` or `/portfolio add`
 - Log keyword choices to `strategy/keyword-performance.md` for tracking

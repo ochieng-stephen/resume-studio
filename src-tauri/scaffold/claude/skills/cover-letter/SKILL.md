@@ -12,6 +12,9 @@ Create a targeted cover letter for a specific role.
 ## Available templates
 !`ls templates/cover-letter-templates/ 2>/dev/null || echo "No templates yet — will use base guidelines"`
 
+## Portfolio evidence
+!`cat portfolio/index.json 2>/dev/null || echo "No portfolio yet — suggest /portfolio import to build one from the CVs."`
+
 ## Steps
 
 1. **Get the job details**: If `$ARGUMENTS` is a URL, fetch the job description. If text, use
@@ -26,7 +29,9 @@ Create a targeted cover letter for a specific role.
 
 3. **Draft the cover letter**:
    - Lead with what the candidate brings to this specific role (value-first)
-   - Reference 1-2 specific projects that demonstrate relevant capability
+   - Reference 1-2 specific projects **from the portfolio evidence above** that best match this
+     role — cite their real outcomes. Respect `confidential` items (use the outcome, never name
+     the `org` or expose `links`).
    - Mirror the company's language and priorities
    - Show genuine understanding of what they're building/solving
    - Keep under 300 words unless the application requests more

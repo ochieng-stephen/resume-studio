@@ -26,13 +26,30 @@ See `profile.json` for target roles, search parameters, core stack, and differen
 - **CVs**: `my-current-cvs/`
 - **Resumes**: `my-current-resumes/`
 
+## Portfolio Reference (evidence corpus)
+`portfolio/index.json` is the candidate's private, structured record of real projects,
+outcomes, and work samples — the source of truth that CVs and cover letters draw from.
+
+- **Before tailoring or writing a cover letter, consult `portfolio/index.json`.** Select the
+  items whose `skills`/`keywords` overlap the job description, and weave their concrete
+  `outcomes` and `links` into the document.
+- This is what keeps tailoring both relevant AND honest: surface real evidence, never invent it.
+- Respect `confidential: true` — use the item's outcomes/skills, but never expose its `org`
+  name or `links` in generated documents or logs.
+- Full write-ups live in `portfolio/case-studies/`; binary samples in `portfolio/artifacts/`.
+  Read those only when you need detail beyond the index summary.
+- Use `profileLinks` for the document header (GitHub, personal site) when relevant.
+- Manage the portfolio with `/portfolio` (import from CVs, add, list, match, sync).
+
 ## CV Tailoring Guidelines
 1. Start from the CV version closest to the role
-2. Match keywords from the job description — mirror their language naturally
-3. Reorder skills and experience to front-load what the role prioritizes
-4. Quantify impact where possible
-5. Never fabricate experience — only reframe and emphasize existing skills
-6. Save tailored versions to `generated/tailored-cvs/` or `generated/tailored-resumes/` with
+2. Pull relevant evidence from `portfolio/index.json` — real projects/outcomes matching the role
+3. Match keywords from the job description — mirror their language naturally
+4. Reorder skills and experience to front-load what the role prioritizes
+5. Quantify impact where possible (prefer the portfolio's real `outcomes`)
+6. Never fabricate experience — only reframe and emphasize existing skills and portfolio evidence
+7. In your summary of changes, note which portfolio items you drew from (by `id`) for traceability
+8. Save tailored versions to `generated/tailored-cvs/` or `generated/tailored-resumes/` with
    naming: `{company}-{role}-{date}.md`
 
 ## Cover Letter Guidelines
@@ -67,6 +84,10 @@ generated/                — All generated/tailored outputs
   tailored-cvs/
   tailored-resumes/
   cover-letters/
+portfolio/                — Private evidence corpus (real projects behind the résumé)
+  index.json              — Structured, tagged manifest the agent matches against roles
+  case-studies/           — Full markdown write-ups
+  artifacts/              — PDFs, images, code samples, screenshots
 templates/                — Reusable templates
   cover-letter-templates/
 tracker/                  — Application tracking
