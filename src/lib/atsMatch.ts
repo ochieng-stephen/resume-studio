@@ -48,6 +48,34 @@ export function extractKeywords(jobDescription: string, maxKeywords = 40): Keywo
     .map(([keyword, count]) => ({ keyword, count, matched: false }));
 }
 
+export interface RankedPortfolioItem<T> {
+  item: T;
+  /** Number of the job's top keywords this item's skills/keywords cover. */
+  score: number;
+  /** The overlapping keywords, for a "why it fits" explanation. */
+  matched: string[];
+}
+
+/**
+ * Ranks portfolio items by how well their skills/keywords cover the job description's language.
+ * Reuses the same keyword extraction/tokenization as ATS matching so the two stay consistent.
+ */
+export function rankPortfolioItems<T extends { skills: string[]; keywords: string[] }>(
+  jobDescription: string,
+  items: T[],
+): RankedPortfolioItem<T>[] {
+  const jdKeywords = new Set(extractKeywords(jobDescription).map((k) => singularize(k.keyword)));
+  return items
+    .map((item) => {
+      const itemTokens = new Set(
+        [...item.skills, ...item.keywords].flatMap((s) => tokenize(s)).map(singularize),
+      );
+      const matched = [...jdKeywords].filter((k) => itemTokens.has(k));
+      return { item, score: matched.length, matched };
+    })
+    .sort((a, b) => b.score - a.score);
+}
+
 export function checkAtsMatch(jobDescription: string, resumeText: string): AtsResult {
   const resumeTokens = new Set(tokenize(resumeText).map(singularize));
   const keywords = extractKeywords(jobDescription);

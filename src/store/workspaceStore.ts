@@ -12,7 +12,11 @@ interface WorkspaceState {
 
 async function activateWorkspace(path: string) {
   const isWorkspace = await invoke<boolean>("is_resume_workspace", { path });
-  if (!isWorkspace) {
+  if (isWorkspace) {
+    // Already a workspace: silently top up any files added by newer app versions
+    // (e.g. portfolio/). scaffold_workspace is idempotent and never clobbers edited files.
+    await invoke("scaffold_workspace", { path }).catch(() => {});
+  } else {
     const shouldScaffold = window.confirm(
       "This folder doesn't look like a Résumé Studio workspace yet.\n\n" +
         "Set it up with the standard structure (CLAUDE.md, agent skills, tracker, templates)?",

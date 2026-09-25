@@ -1,7 +1,7 @@
 ---
 name: strategy
 description: Review job search performance, analyze patterns, update strategy and configuration. The self-improvement engine.
-argument-hint: "[review | update | keywords | platforms]"
+argument-hint: "[review | update | keywords | platforms | evidence]"
 allowed-tools: "Read Write Edit Bash WebSearch"
 ---
 
@@ -37,6 +37,14 @@ Deep-dive into keyword performance:
 - Which soft skills/phrases correlate with responses?
 - Current market trends — web search for in-demand skills in target roles
 - Recommend keyword adjustments for CVs and cover letters
+
+### "evidence"
+Portfolio effectiveness review:
+- Cross-reference `portfolio/index.json` with `tracker/applications.json`: which portfolio
+  items were surfaced in applications that reached interview/offer?
+- Identify the candidate's **strongest evidence** — items that correlate with responses — and
+  recommend leading with them in future tailoring.
+- Flag gaps: recurring JD requirements with no matching portfolio item → suggest `/portfolio add`.
 
 ### "platforms"
 Platform effectiveness review:
