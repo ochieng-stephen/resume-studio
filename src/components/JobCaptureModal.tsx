@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useJobCaptureStore } from "../store/jobCaptureStore";
 import { useWorkspaceStore } from "../store/workspaceStore";
 import { useTabsStore } from "../store/tabsStore";
 import { buildJobCaptureFile } from "../lib/jobCapture";
 import { sendToAgent } from "../lib/agentBridge";
+import { rankPortfolioItems } from "../lib/atsMatch";
+import { PortfolioItem, normalizePortfolio } from "../lib/portfolio";
 
 export function JobCaptureModal() {
   const open = useJobCaptureStore((s) => s.open);
@@ -16,6 +18,22 @@ export function JobCaptureModal() {
   const [url, setUrl] = useState("");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+
+  useEffect(() => {
+    if (!open || !rootPath) return;
+    invoke<string>("read_text_file", { path: `${rootPath}/portfolio/index.json` })
+      .then((raw) => setPortfolioItems(normalizePortfolio(JSON.parse(raw)).items))
+      .catch(() => setPortfolioItems([]));
+  }, [open, rootPath]);
+
+  const matches = useMemo(() => {
+    const jd = `${role} ${description}`.trim();
+    if (jd.length < 12 || portfolioItems.length === 0) return [];
+    return rankPortfolioItems(jd, portfolioItems)
+      .filter((m) => m.score > 0)
+      .slice(0, 3);
+  }, [role, description, portfolioItems]);
 
   if (!open) return null;
 
@@ -91,6 +109,29 @@ export function JobCaptureModal() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+          {matches.length > 0 && (
+            <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] p-2">
+              <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+                Portfolio matches for this role
+              </p>
+              <div className="flex flex-col gap-1">
+                {matches.map((m) => (
+                  <div key={m.item.id} className="flex items-baseline gap-2">
+                    <span className="truncate text-[11px] text-[var(--color-text)]">
+                      {m.item.title || "Untitled project"}
+                    </span>
+                    <span className="shrink-0 truncate text-[10px] text-[var(--color-text-muted)]">
+                      {m.matched.slice(0, 4).join(", ")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-1 text-[10px] text-[var(--color-text-muted)]">
+                Tailoring will draw on these. Missing something? Add it in Portfolio.
+              </p>
+            </div>
+          )}
+
           <div className="flex justify-end gap-2 pt-1">
             <button
               className="rounded px-2.5 py-1 text-xs text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)]"

@@ -22,6 +22,11 @@ export const SLASH_COMMANDS: SlashCommand[] = [
     description: "Generate a targeted cover letter from your templates.",
   },
   {
+    command: "/portfolio",
+    argumentHint: "[import | add | list | match | sync]",
+    description: "Build and match your evidence corpus of real projects and outcomes.",
+  },
+  {
     command: "/strategy",
     argumentHint: "[review | update | keywords | platforms]",
     description: "Analyze application performance and refine your search strategy.",

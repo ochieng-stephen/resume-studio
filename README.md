@@ -16,7 +16,11 @@ documents in place.
   "Advanced" view for browsing the raw workspace like a normal file tree.
 - A real terminal (PTY-backed) wired into the workspace, with one-click presets for
   launching an AI agent and a slash-command guide for structured tasks (search,
-  tailor, cover letter, strategy, tracker).
+  tailor, cover letter, portfolio, strategy, tracker).
+- A private **portfolio** — a structured, tagged record of your real projects and
+  outcomes that the agent draws on when tailoring, so career docs stay both relevant
+  and truthful. Build it in one click from your existing CV (`/portfolio import`), and
+  see which projects match a role the moment you capture a job.
 - Markdown authoring with live preview and PDF/DOCX export, plus git-backed version
   history.
 

@@ -17,6 +17,8 @@ const SKILL_COVER_LETTER: &str = include_str!("../scaffold/claude/skills/cover-l
 const SKILL_TRACKER: &str = include_str!("../scaffold/claude/skills/tracker/SKILL.md");
 const SKILL_STRATEGY: &str = include_str!("../scaffold/claude/skills/strategy/SKILL.md");
 const SKILL_AUTOPILOT: &str = include_str!("../scaffold/claude/skills/autopilot/SKILL.md");
+const SKILL_PORTFOLIO: &str = include_str!("../scaffold/claude/skills/portfolio/SKILL.md");
+const PORTFOLIO_INDEX: &str = include_str!("../scaffold/portfolio/index.json");
 const TEMPLATE_FULLTIME: &str =
     include_str!("../scaffold/templates/cover-letter-templates/fulltime-swe.md");
 const TEMPLATE_CONTRACT: &str =
@@ -65,12 +67,15 @@ pub fn scaffold_workspace(path: String) -> Result<(), String> {
         "tracker",
         "strategy",
         "tasks",
+        "portfolio/case-studies",
+        "portfolio/artifacts",
         ".claude/skills/search",
         ".claude/skills/tailor",
         ".claude/skills/cover-letter",
         ".claude/skills/tracker",
         ".claude/skills/strategy",
         ".claude/skills/autopilot",
+        ".claude/skills/portfolio",
         ".claude/output-styles",
     ] {
         ensure_dir(&base.join(dir))?;
@@ -92,6 +97,11 @@ pub fn scaffold_workspace(path: String) -> Result<(), String> {
         &base.join(".claude/skills/autopilot/SKILL.md"),
         SKILL_AUTOPILOT,
     )?;
+    ensure_file(
+        &base.join(".claude/skills/portfolio/SKILL.md"),
+        SKILL_PORTFOLIO,
+    )?;
+    ensure_file(&base.join("portfolio/index.json"), PORTFOLIO_INDEX)?;
     ensure_file(
         &base.join("templates/cover-letter-templates/fulltime-swe.md"),
         TEMPLATE_FULLTIME,
@@ -173,6 +183,10 @@ mod tests {
         assert!(dir.join("profile.json").exists());
         assert!(dir.join("tracker/applications.json").exists());
         assert!(dir.join(".claude/skills/autopilot/SKILL.md").exists());
+        assert!(dir.join(".claude/skills/portfolio/SKILL.md").exists());
+        assert!(dir.join("portfolio/index.json").exists());
+        assert!(dir.join("portfolio/case-studies").exists());
+        assert!(dir.join("portfolio/artifacts").exists());
         assert!(dir
             .join("templates/cover-letter-templates/ai-training.md")
             .exists());

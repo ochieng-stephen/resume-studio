@@ -18,6 +18,7 @@ import { importFileInto } from "../lib/importFile";
 import { humanizeFilename } from "../lib/humanizeFilename";
 import { buildTemplateStarter, uniqueTemplateFilename } from "../lib/newTemplate";
 import { ProfileEditor } from "./ProfileEditor";
+import { PortfolioEditor } from "./PortfolioEditor";
 import { PromptModal } from "./PromptModal";
 import { SlashCommandGuide } from "./SlashCommandGuide";
 
@@ -235,6 +236,8 @@ export function SimpleWorkspaceView() {
       <SlashCommandGuide />
 
       <ProfileEditor rootPath={rootPath} />
+
+      <PortfolioEditor rootPath={rootPath} />
 
       <Section
         title="My CVs & Resumes"
