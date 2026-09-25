@@ -3,18 +3,18 @@
 All notable changes to Résumé Studio are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
-## [0.2.0] — 2026-09-25
+## [0.2.0] - 2026-09-25
 
 ### Added
-- **Portfolio** — a private, structured record of your real projects and outcomes
-  (`portfolio/index.json`) that the built-in AI agent draws on when tailoring CVs and cover
-  letters, so documents stay relevant *and* truthful.
-- **Build from your CV** — one-click "Build from my CV" (and `/portfolio import`) extracts
+- **Portfolio**: a private, structured record of your real projects and outcomes
+  (`portfolio/index.json`) that the AI coding agent you run in the editor draws on when
+  tailoring CVs and cover letters, so documents stay relevant *and* truthful.
+- **Build from your CV**: one-click "Build from my CV" (and `/portfolio import`) extracts
   structured portfolio entries from your existing résumé for you to confirm.
-- **Role matching** — captured jobs show which of your portfolio projects best match the role.
-- **Confidential entries** — mark sensitive work so the agent uses the outcome without exposing
+- **Role matching**: captured jobs show which of your portfolio projects best match the role.
+- **Confidential entries**: mark sensitive work so the agent uses the outcome without exposing
   the client or links.
-- **`/portfolio` command** — `import · add · list · match · sync`, plus a Portfolio panel in the
+- **`/portfolio` command**: `import · add · list · match · sync`, plus a Portfolio panel in the
   Simple view.
 
 ### Changed
@@ -27,7 +27,7 @@ All notable changes to Résumé Studio are documented here. This project adheres
 - Existing workspaces gain the `portfolio/` folder automatically on next open; edited files are
   never overwritten.
 
-## [0.1.0] — 2026-09-07
+## [0.1.0] - 2026-09-07
 
 ### Added
 - Initial release: IDE-style workspace with a file sidebar, multi-tab Markdown editor, live
