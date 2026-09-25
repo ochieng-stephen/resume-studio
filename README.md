@@ -1,9 +1,9 @@
 # Résumé Studio
 
 A native macOS and Windows app for writing, tailoring, and shipping résumés and cover
-letters — with an AI coding agent (like Claude Code) built directly into the editor
-via an embedded terminal, so the agent can read, edit, and version-control your
-documents in place.
+letters — with an embedded terminal that runs your AI coding agent (like Claude Code,
+Codex, or Aider) right in the editor, so it can read, edit, and version-control your
+documents in place. You bring the agent; the app gives it a workspace built for the job.
 
 **[Download](https://github.com/ochieng-stephen/resume-studio/releases/latest) ·
 [resume-studio landing page](https://ochieng-stephen.github.io/resume-studio/)**
@@ -15,8 +15,8 @@ documents in place.
 - A dual-mode file explorer — a guided "Simple" view for non-technical use, and an
   "Advanced" view for browsing the raw workspace like a normal file tree.
 - A real terminal (PTY-backed) wired into the workspace, with one-click presets for
-  launching an AI agent and a slash-command guide for structured tasks (search,
-  tailor, cover letter, portfolio, strategy, tracker).
+  launching your AI coding agent (Claude Code, Codex, Aider) and a slash-command guide
+  for structured tasks (search, tailor, cover letter, portfolio, strategy, tracker).
 - A private **portfolio** — a structured, tagged record of your real projects and
   outcomes that the agent draws on when tailoring, so career docs stay both relevant
   and truthful. Build it in one click from your existing CV (`/portfolio import`), and
