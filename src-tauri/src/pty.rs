@@ -69,11 +69,38 @@ pub fn pty_spawn(
     let event_id = id.clone();
     std::thread::spawn(move || {
         let mut buf = [0u8; 8192];
+        // Holds a trailing partial UTF-8 sequence split across reads, so multibyte glyphs
+        // (e.g. the box-drawing characters a TUI like Claude Code draws its UI with) are
+        // never turned into replacement chars at the 8 KB boundary — which would misalign
+        // the rendered output.
+        let mut leftover: Vec<u8> = Vec::new();
         loop {
             match reader.read(&mut buf) {
                 Ok(0) => break,
                 Ok(n) => {
-                    let data = String::from_utf8_lossy(&buf[..n]).to_string();
+                    let mut bytes = std::mem::take(&mut leftover);
+                    bytes.extend_from_slice(&buf[..n]);
+
+                    let data = match std::str::from_utf8(&bytes) {
+                        Ok(s) => s.to_string(),
+                        Err(e) => {
+                            let valid = e.valid_up_to();
+                            let mut s = String::from_utf8_lossy(&bytes[..valid]).into_owned();
+                            match e.error_len() {
+                                // Incomplete sequence at the end: keep it for the next read.
+                                None => leftover.extend_from_slice(&bytes[valid..]),
+                                // Genuinely invalid bytes mid-stream: pass them through lossily.
+                                Some(_) => {
+                                    s.push_str(&String::from_utf8_lossy(&bytes[valid..]))
+                                }
+                            }
+                            s
+                        }
+                    };
+
+                    if data.is_empty() {
+                        continue;
+                    }
                     if app_handle
                         .emit(&format!("pty-output-{}", event_id), data)
                         .is_err()
