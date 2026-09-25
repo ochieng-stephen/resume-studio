@@ -1,9 +1,9 @@
 # Résumé Studio
 
 A native macOS and Windows app for writing, tailoring, and shipping résumés and cover
-letters — with an embedded terminal that runs your AI coding agent (like Claude Code,
-Codex, or Aider) right in the editor, so it can read, edit, and version-control your
-documents in place. You bring the agent; the app gives it a workspace built for the job.
+letters. An embedded terminal in the editor runs your AI coding agent (like Claude Code,
+Codex, or Aider), so it can read, edit, and version-control your documents in place.
+You bring the agent; the app gives it a workspace built for the job.
 
 **[Download](https://github.com/ochieng-stephen/resume-studio/releases/latest) ·
 [resume-studio landing page](https://ochieng-stephen.github.io/resume-studio/)**
