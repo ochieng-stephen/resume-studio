@@ -35,6 +35,12 @@ export function SettingsModal() {
     setAgentPresets(agentPresets.filter((p) => p !== preset));
   };
 
+  // The first preset is the default agent that one-click actions (e.g. "Build from my CV")
+  // auto-launch. Moving a preset to the front makes it the default.
+  const makeDefault = (preset: string) => {
+    setAgentPresets([preset, ...agentPresets.filter((p) => p !== preset)]);
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-center bg-black/30 pt-20"
@@ -71,22 +77,42 @@ export function SettingsModal() {
           </div>
 
           <div>
-            <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+            <h3 className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
               Terminal Agent Presets
             </h3>
+            <p className="mb-2 text-[10px] text-[var(--color-text-muted)]">
+              The default is auto-launched by one-click actions like “Build from my CV”.
+            </p>
             <div className="flex flex-col gap-1.5">
-              {agentPresets.map((preset) => (
+              {agentPresets.map((preset, i) => (
                 <div
                   key={preset}
-                  className="flex items-center justify-between rounded border border-[var(--color-border)] px-2 py-1 text-xs"
+                  className="flex items-center justify-between gap-2 rounded border border-[var(--color-border)] px-2 py-1 text-xs"
                 >
-                  <span className="text-[var(--color-text)]">{preset}</span>
-                  <button
-                    className="text-[var(--color-text-muted)] hover:text-red-500"
-                    onClick={() => removePreset(preset)}
-                  >
-                    ×
-                  </button>
+                  <span className="flex items-center gap-1.5 text-[var(--color-text)]">
+                    {preset}
+                    {i === 0 && (
+                      <span className="rounded-full bg-[var(--color-bg-tertiary)] px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-[var(--color-text-muted)]">
+                        default
+                      </span>
+                    )}
+                  </span>
+                  <div className="flex shrink-0 items-center gap-2">
+                    {i !== 0 && (
+                      <button
+                        className="text-[10px] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                        onClick={() => makeDefault(preset)}
+                      >
+                        Set as default
+                      </button>
+                    )}
+                    <button
+                      className="text-[var(--color-text-muted)] hover:text-red-500"
+                      onClick={() => removePreset(preset)}
+                    >
+                      ×
+                    </button>
+                  </div>
                 </div>
               ))}
               <div className="flex gap-1.5">
