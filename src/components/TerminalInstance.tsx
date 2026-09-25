@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import { Terminal as XTerm } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
+import { WebglAddon } from "@xterm/addon-webgl";
+import { CanvasAddon } from "@xterm/addon-canvas";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import "@xterm/xterm/css/xterm.css";
@@ -33,6 +35,27 @@ export function TerminalInstance({ id, active }: { id: string; active: boolean }
     fit.fit();
     termRef.current = term;
     fitRef.current = fit;
+
+    // Accelerated rendering: the DOM renderer is slow for the heavily-styled, frequently
+    // redrawn output of a TUI agent (e.g. Claude Code), which makes scrolling laggy. Try
+    // WebGL first, fall back to the Canvas renderer, then to the default DOM renderer.
+    const loadCanvas = () => {
+      try {
+        term.loadAddon(new CanvasAddon());
+      } catch {
+        // Keep the default DOM renderer.
+      }
+    };
+    try {
+      const webgl = new WebglAddon();
+      webgl.onContextLoss(() => {
+        webgl.dispose();
+        loadCanvas();
+      });
+      term.loadAddon(webgl);
+    } catch {
+      loadCanvas();
+    }
 
     invoke("pty_spawn", { id, cwd: rootPathAtMount.current ?? undefined }).catch((e) => {
       term.writeln(`Failed to start shell: ${e}`);
