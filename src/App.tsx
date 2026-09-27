@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { TitleBar } from "./components/TitleBar";
 import { Sidebar } from "./components/Sidebar";
@@ -34,6 +34,17 @@ function App() {
     resetTerminalHeight,
   } = useUIStore();
   const theme = useSettingsStore((s) => s.theme);
+
+  // TerminalPanel spawns a real PTY process and owns an xterm.js buffer per tab; unmounting it
+  // kills the shell and disposes the buffer (see TerminalInstance.tsx's cleanup). Conditionally
+  // rendering on `terminalVisible` directly would kill+respawn the session every time the panel
+  // is hidden and reopened, losing all terminal state. Instead, mount it once on first open and
+  // keep it mounted forever after — visibility is then just CSS (`hidden`), same "stay mounted,
+  // hide via display:none" pattern TerminalInstance already uses for switching between tabs.
+  const [terminalEverOpened, setTerminalEverOpened] = useState(terminalVisible);
+  useEffect(() => {
+    if (terminalVisible) setTerminalEverOpened(true);
+  }, [terminalVisible]);
 
   useEffect(() => {
     if (theme === "system") {
@@ -94,14 +105,17 @@ function App() {
               </>
             )}
           </div>
-          {terminalVisible && (
-            <div style={{ height: terminalHeight }} className="flex shrink-0 flex-col">
+          {terminalEverOpened && (
+            <div
+              style={{ height: terminalHeight }}
+              className={`flex shrink-0 flex-col ${terminalVisible ? "" : "hidden"}`}
+            >
               <ResizeHandle
                 orientation="horizontal"
                 onResize={(d) => resizeTerminal(-d)}
                 onReset={resetTerminalHeight}
               />
-              <TerminalPanel />
+              <TerminalPanel visible={terminalVisible} />
             </div>
           )}
         </div>

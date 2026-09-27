@@ -1,8 +1,24 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type InputHTMLAttributes } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { ChevronDown, ChevronRight, UserRound } from "lucide-react";
+import { UserCircleIcon } from "@phosphor-icons/react";
 import { Profile, emptyProfile, normalizeProfile } from "../lib/profile";
+import { DrawerPull } from "./DrawerPull";
 import { TagListInput } from "./TagListInput";
+
+// Shared shape/feel for every field in this panel: soft corners and a warm amber focus glow
+// (the same accent the portfolio cards use) instead of the browser default, so filling in your
+// own information feels attended-to rather than like a bare dev-tool form.
+const INPUT_CLASS =
+  "w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-1.5 text-xs text-[var(--color-text)] outline-none transition-colors placeholder:text-[var(--color-text-muted)] hover:border-[var(--color-text-muted)] focus:border-[#c8975c] focus:ring-2 focus:ring-[#c8975c]/15";
+
+function Field({ label, ...props }: { label: string } & InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <label className="flex flex-col gap-1">
+      <span className="text-[11px] font-medium tracking-wide text-[var(--color-text-muted)]">{label}</span>
+      <input className={INPUT_CLASS} {...props} />
+    </label>
+  );
+}
 
 export function ProfileEditor({ rootPath }: { rootPath: string }) {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -35,46 +51,50 @@ export function ProfileEditor({ rootPath }: { rootPath: string }) {
     : "Set up your profile";
 
   return (
-    <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+    <div className="rounded-md border border-[var(--color-cabinet-border)] bg-[var(--color-cabinet)] shadow-[var(--shadow-cabinet)]">
       <button
-        className="flex w-full items-center gap-2 px-3 py-2.5 text-left"
+        className="group flex w-full items-center gap-2 px-3 py-2.5 text-left transition-transform active:scale-[0.99]"
         onClick={() => setExpanded((v) => !v)}
       >
-        <UserRound size={14} className="shrink-0 text-[var(--color-text-muted)]" />
+        <UserCircleIcon size={14} className="shrink-0 text-[var(--color-text-muted)]" />
+        {/* Deliberately NOT the uppercase/tracking-wide label style the other sidebar section
+            headers use (Slash Commands, Portfolio, etc.) — this shows the user's own name, and
+            shouting someone's name in small caps reads cold, not affirming. */}
         <span className="flex-1 truncate text-xs font-medium text-[var(--color-text)]">
           {summary}
         </span>
-        {expanded ? (
-          <ChevronDown size={14} className="text-[var(--color-text-muted)]" />
-        ) : (
-          <ChevronRight size={14} className="text-[var(--color-text-muted)]" />
-        )}
+        <DrawerPull expanded={expanded} />
       </button>
 
-      {expanded && (
-        <div className="flex flex-col gap-3 border-t border-[var(--color-border)] p-3">
-          <div className="grid grid-cols-2 gap-2">
-            <input
-              className="rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-              placeholder="Name"
+      <div
+        className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+          expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden">
+        <div className="flex flex-col gap-3.5 border-t border-[var(--color-cabinet-border)] p-3">
+          <div className="grid grid-cols-2 gap-x-2 gap-y-3">
+            <Field
+              label="Name"
+              placeholder="e.g. Jordan Rivera"
               value={profile.name}
               onChange={(e) => persist({ ...profile, name: e.target.value }, true)}
             />
-            <input
-              className="rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-              placeholder="Current role"
+            <Field
+              label="Current role"
+              placeholder="e.g. Senior Product Designer"
               value={profile.role}
               onChange={(e) => persist({ ...profile, role: e.target.value }, true)}
             />
-            <input
-              className="rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-              placeholder="Location"
+            <Field
+              label="Location"
+              placeholder="e.g. Austin, TX"
               value={profile.location}
               onChange={(e) => persist({ ...profile, location: e.target.value }, true)}
             />
-            <input
-              className="rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-              placeholder="Email"
+            <Field
+              label="Email"
+              placeholder="e.g. you@example.com"
               value={profile.email}
               onChange={(e) => persist({ ...profile, email: e.target.value }, true)}
             />
@@ -99,10 +119,10 @@ export function ProfileEditor({ rootPath }: { rootPath: string }) {
             placeholder="What sets you apart"
           />
 
-          <div className="grid grid-cols-2 gap-2">
-            <input
-              className="rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-              placeholder="Location preference"
+          <div className="grid grid-cols-2 gap-x-2 gap-y-3">
+            <Field
+              label="Location preference"
+              placeholder="e.g. Remote or Hybrid (NYC)"
               value={profile.searchParameters.locationPreference}
               onChange={(e) =>
                 persist(
@@ -114,9 +134,9 @@ export function ProfileEditor({ rootPath }: { rootPath: string }) {
                 )
               }
             />
-            <input
-              className="rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-              placeholder="Seniority"
+            <Field
+              label="Seniority"
+              placeholder="e.g. Senior / Staff"
               value={profile.searchParameters.seniority}
               onChange={(e) =>
                 persist(
@@ -143,7 +163,8 @@ export function ProfileEditor({ rootPath }: { rootPath: string }) {
             placeholder="e.g. LinkedIn"
           />
         </div>
-      )}
+        </div>
+      </div>
     </div>
   );
 }

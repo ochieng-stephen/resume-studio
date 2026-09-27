@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Terminal as XTerm } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebglAddon } from "@xterm/addon-webgl";
@@ -12,7 +12,15 @@ import { useWorkspaceStore } from "../store/workspaceStore";
 const lightTheme = { background: "#ffffff", foreground: "#1e1e1e", cursor: "#1e1e1e" };
 const darkTheme = { background: "#1e1e1e", foreground: "#d4d4d4", cursor: "#d4d4d4" };
 
-export function TerminalInstance({ id, active }: { id: string; active: boolean }) {
+export function TerminalInstance({
+  id,
+  active,
+  panelVisible,
+}: {
+  id: string;
+  active: boolean;
+  panelVisible: boolean;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<XTerm | null>(null);
   const fitRef = useRef<FitAddon | null>(null);
@@ -91,12 +99,41 @@ export function TerminalInstance({ id, active }: { id: string; active: boolean }
     }
   }, [dark]);
 
-  useEffect(() => {
-    if (active) {
+  // Masks a confirmed xterm.js rendering bug on reveal: even calling `fit()` synchronously
+  // before paint (see below) doesn't stop it — xterm's own renderer repaints asynchronously to
+  // `fit()`/`resize()`, not synchronously with it, so it still paints one frame at the wrong
+  // (larger) cell size *after* fit() has already run and corrected cols/rows, then repaints
+  // again at the right size a frame later. Confirmed by pixel-diffing extracted video frames:
+  // the glyph bounding box is 676x92 for exactly one frame on every reveal, then 444x78 (its
+  // real settled size) on every frame after. Since the bad paint happens regardless of when we
+  // call fit(), the fix is to hide the terminal (via `visibility`, which — unlike `display:none`
+  // — still lets it lay out/measure/paint internally) for two animation frames after becoming
+  // visible, so that bad paint happens off-screen, then reveal it once the correct paint has
+  // had a chance to land.
+  const [revealed, setRevealed] = useState(!panelVisible || !active);
+
+  useLayoutEffect(() => {
+    if (active && panelVisible) {
       fitRef.current?.fit();
       termRef.current?.focus();
+      if (termRef.current) {
+        invoke("pty_resize", { id, rows: termRef.current.rows, cols: termRef.current.cols }).catch(
+          () => {},
+        );
+      }
+      setRevealed(false);
+      const raf1 = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setRevealed(true));
+      });
+      return () => cancelAnimationFrame(raf1);
     }
-  }, [active]);
+  }, [active, panelVisible, id]);
 
-  return <div className={active ? "block h-full w-full" : "hidden"} ref={containerRef} />;
+  return (
+    <div
+      className={active ? "block h-full w-full" : "hidden"}
+      style={active ? { visibility: revealed ? "visible" : "hidden" } : undefined}
+      ref={containerRef}
+    />
+  );
 }

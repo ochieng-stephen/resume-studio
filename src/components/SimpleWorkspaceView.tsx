@@ -2,15 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import {
-  Briefcase,
-  FileSearch,
-  FileText,
-  Files,
-  Plus,
-  Search,
-  Sparkles,
-  Table,
-} from "lucide-react";
+  BriefcaseIcon,
+  EnvelopeIcon,
+  FileMagnifyingGlassIcon,
+  FilesIcon,
+  LightningIcon,
+  MagicWandIcon,
+  PlusIcon,
+  MagnifyingGlassIcon,
+  SparkleIcon,
+  TableIcon,
+} from "@phosphor-icons/react";
 import { useWorkspaceStore } from "../store/workspaceStore";
 import { useTabsStore } from "../store/tabsStore";
 import { useJobCaptureStore } from "../store/jobCaptureStore";
@@ -47,26 +49,77 @@ async function safeListFiles(path: string): Promise<DirEntryInfo[]> {
 
 const DOC_EXTENSIONS = ["pdf", "doc", "docx", "md", "txt"];
 
+// Peer-weight quick actions (no single one is the "flagship" the way /autopilot is among
+// slash commands), so all four share one identical warm hover treatment rather than any one
+// of them being singled out — the icon badge reuses the exact amber tint from the slash
+// command panel's icon badges, so the "this is interactive and warm" signature reads as one
+// consistent language across the sidebar rather than a one-off.
 function QuickTool({
   icon: Icon,
   label,
   onClick,
 }: {
-  icon: typeof Table;
+  icon: typeof TableIcon;
   label: string;
   onClick: () => void;
 }) {
   return (
     <button
       onClick={onClick}
-      className="flex flex-1 flex-col items-center gap-1 rounded-md border border-[var(--color-border)] py-2 text-[10px] text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text)]"
+      className="group flex flex-1 flex-col items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] py-2.5 text-[10.5px] font-medium text-[var(--color-text-muted)] transition-colors duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-[var(--color-icon-hover)]/40 hover:text-[var(--color-text)]"
     >
-      <Icon size={15} />
-      {label}
+      {/* Depth illusion (scale) plus an orbit illusion (vertical position), on independent axes:
+          the icon grows AND dips down a touch, the label shrinks AND rises a touch — they move
+          toward each other symmetrically (translate-y-1 / -translate-y-1), as if both are
+          swinging toward a shared horizontal axis sitting between them, like a seesaw or two
+          points on a rotating disc. Explicit user direction: "add a vertical displacement... so
+          that they appropriately come closer to each other to give the impression as if
+          revolving around an axis." Scale still carries depth independently (icon bigger/closer,
+          label smaller/farther) — the two cues aren't contradictory, they're orthogonal axes of
+          the same gesture. This superseded an earlier version where the label instead drifted
+          DOWN, away from the icon (a pure "receding" cue with no convergence) — don't revert to
+          that without a fresh explicit ask. Base recipe originally landed on the CV/Resume/
+          Capture/New plus-icon buttons in this file, reused here per "use the same animation for
+          quick actions icons" — an explicit, deliberate departure from a vertical-lift hover, not
+          an oversight. The icon sits bare — no badge/box behind
+          it at rest OR on hover ("do not add a background on hover on the quick action icons") —
+          resting color bumped from muted to full `--color-text` to keep the thin/light-weight
+          stroke legible without a plate grounding it; the glow `drop-shadow` on hover is what
+          signals interactivity instead of a background tint. No stroke-thickening here (unlike
+          DrawerPull.tsx) — every sub-pixel offset tried (0.4px, 0.6px) tested as correctly
+          applying in Chromium/Playwright but was reported invisible in the real app, most likely
+          because Tauri's macOS webview is WebKit, not Chromium, and WebKit appears not to render
+          sub-pixel `drop-shadow` offsets the way Chromium does (DrawerPull's whole-number 1px did
+          render correctly in the real app, by contrast) — see the WebKit rendering gotcha memory
+          for this project. Reverted to the plain scale/color/glow recipe per explicit user
+          direction rather than keep guessing at more untested values; do not reintroduce
+          stroke-thickening here without first confirming any candidate value actually renders in
+          the real Tauri window, not just in Playwright's Chromium. */}
+      <span className="flex h-7 w-7 items-center justify-center">
+        {/* weight="light" is a deliberate local override of the app-wide "bold" IconContext
+            default (src/main.tsx) — asked for specifically on this row for a more relaxed vibe,
+            not a reversal of the app-wide bold decision. Started at "thin", bumped one step up
+            to "light" — "thin" read as too thin. */}
+        <Icon
+          size={15}
+          weight="light"
+          className="text-[var(--color-text)] transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0.5 group-hover:scale-110 group-hover:text-[var(--color-icon-hover)] group-hover:drop-shadow-[0_6px_6px_var(--color-icon-hover-glow)]"
+        />
+      </span>
+      {/* Reserves 2-line height so a longer label (e.g. "ATS Check") doesn't make its button
+          taller than its neighbors — the row stays visually level regardless of label length. */}
+      <span className="flex min-h-[28px] items-center justify-center text-center leading-tight transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-0.5 group-hover:scale-90">
+        {label}
+      </span>
     </button>
   );
 }
 
+// Same card + header-bar recipe as the collapsible panels above (SlashCommandGuide, Profile,
+// Portfolio) — every top-level section in this sidebar now shares one bordered-card language,
+// so the eye can chunk section boundaries before ever reading a label. The only structural
+// difference from the collapsible ones is there's no chevron/collapse toggle: these lists are
+// always open, which is itself a meaningful, visible distinction rather than an inconsistency.
 function Section({
   title,
   icon: Icon,
@@ -76,48 +129,56 @@ function Section({
   actions,
 }: {
   title: string;
-  icon: typeof Files;
+  icon: typeof FilesIcon;
   items: Item[];
   emptyText: string;
   onOpen: (path: string) => void;
   actions?: React.ReactNode;
 }) {
   return (
-    <div>
-      <div className="mb-1.5 flex items-center justify-between">
-        <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
-          <Icon size={12} />
+    <div className="rounded-md border border-[var(--color-cabinet-border)] bg-[var(--color-cabinet)] shadow-[var(--shadow-cabinet)]">
+      <div className="flex items-center gap-2 px-3 py-2.5">
+        <Icon size={14} className="shrink-0 text-[var(--color-text-muted)]" />
+        <h3 className="flex-1 truncate text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
           {title}
         </h3>
+        {items.length > 0 && (
+          <span className="text-[10px] text-[var(--color-text-muted)]">{items.length}</span>
+        )}
         <div className="flex items-center gap-1">{actions}</div>
       </div>
-      {items.length === 0 ? (
-        <p className="rounded-md border border-dashed border-[var(--color-border)] px-2.5 py-3 text-center text-[11px] text-[var(--color-text-muted)]">
-          {emptyText}
-        </p>
-      ) : (
-        <div className="flex flex-col gap-1">
-          {items.map((item) => (
-            <button
-              key={item.path}
-              onClick={() => onOpen(item.path)}
-              className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left hover:bg-[var(--color-bg-tertiary)]"
-            >
-              <span className="truncate text-xs text-[var(--color-text)]">{item.primary}</span>
-              <span className="flex shrink-0 items-center gap-1.5">
-                {item.badge && (
-                  <span className="rounded-full bg-[var(--color-bg-tertiary)] px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-[var(--color-text-muted)]">
-                    {item.badge}
-                  </span>
-                )}
-                {item.secondary && (
-                  <span className="text-[10px] text-[var(--color-text-muted)]">{item.secondary}</span>
-                )}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
+      <div className="border-t border-[var(--color-cabinet-border)] p-2">
+        {items.length === 0 ? (
+          // No nested dashed box here — the card's own border already provides the boundary,
+          // so a second border-within-a-border was redundant chrome. Quiet text keeps empty
+          // sections visually light, so populated sections stand out more by contrast.
+          <p className="px-1 py-1 text-[11px] leading-snug text-[var(--color-text-muted)]">
+            {emptyText}
+          </p>
+        ) : (
+          <div className="flex flex-col gap-1">
+            {items.map((item) => (
+              <button
+                key={item.path}
+                onClick={() => onOpen(item.path)}
+                className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left hover:bg-[var(--color-bg-tertiary)]"
+              >
+                <span className="truncate text-xs text-[var(--color-text)]">{item.primary}</span>
+                <span className="flex shrink-0 items-center gap-1.5">
+                  {item.badge && (
+                    <span className="rounded-full bg-[var(--color-bg-tertiary)] px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-[var(--color-text-muted)]">
+                      {item.badge}
+                    </span>
+                  )}
+                  {item.secondary && (
+                    <span className="text-[10px] text-[var(--color-text-muted)]">{item.secondary}</span>
+                  )}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -225,12 +286,20 @@ export function SimpleWorkspaceView() {
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-3">
-      <div className="flex gap-1.5">
-        <QuickTool icon={Table} label="Tracker" onClick={openTrackerTab} />
-        <QuickTool icon={FileSearch} label="ATS Check" onClick={openAtsTab} />
-        <QuickTool icon={Sparkles} label="Snippets" onClick={openSnippetsTab} />
-        <QuickTool icon={Search} label="Search" onClick={openSearchTab} />
+    <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
+      <div className="rounded-md border border-[var(--color-cabinet-border)] bg-[var(--color-cabinet)] shadow-[var(--shadow-cabinet)]">
+        <div className="flex items-center gap-2 px-3 py-2.5">
+          <LightningIcon size={14} className="shrink-0 text-[var(--color-text-muted)]" />
+          <h3 className="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+            Quick Actions
+          </h3>
+        </div>
+        <div className="flex gap-2 border-t border-[var(--color-cabinet-border)] p-2">
+          <QuickTool icon={TableIcon} label="Tracker" onClick={openTrackerTab} />
+          <QuickTool icon={FileMagnifyingGlassIcon} label="ATS Check" onClick={openAtsTab} />
+          <QuickTool icon={SparkleIcon} label="Snippets" onClick={openSnippetsTab} />
+          <QuickTool icon={MagnifyingGlassIcon} label="Search" onClick={openSearchTab} />
+        </div>
       </div>
 
       <SlashCommandGuide />
@@ -241,7 +310,7 @@ export function SimpleWorkspaceView() {
 
       <Section
         title="My CVs & Resumes"
-        icon={Files}
+        icon={FilesIcon}
         items={cvResumes}
         emptyText="No CVs or resumes yet — import your current one to get started."
         onOpen={openAt}
@@ -250,16 +319,28 @@ export function SimpleWorkspaceView() {
             <button
               title="Import CV"
               onClick={() => doImport("my-current-cvs")}
-              className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)]"
+              className="group flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-[var(--color-text-muted)] transition-colors duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[var(--color-text)]"
             >
-              <Plus size={11} /> CV
+              <PlusIcon
+                size={11}
+                className="transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-125 group-hover:text-[var(--color-icon-hover)] group-hover:drop-shadow-[0_5px_5px_var(--color-icon-hover-glow)]"
+              />
+              <span className="inline-block blur-none transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-90 group-hover:blur-[1px]">
+                CV
+              </span>
             </button>
             <button
               title="Import Resume"
               onClick={() => doImport("my-current-resumes")}
-              className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)]"
+              className="group flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-[var(--color-text-muted)] transition-colors duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[var(--color-text)]"
             >
-              <Plus size={11} /> Resume
+              <PlusIcon
+                size={11}
+                className="transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-125 group-hover:text-[var(--color-icon-hover)] group-hover:drop-shadow-[0_5px_5px_var(--color-icon-hover-glow)]"
+              />
+              <span className="inline-block blur-none transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-90 group-hover:blur-[1px]">
+                Resume
+              </span>
             </button>
           </>
         }
@@ -267,7 +348,7 @@ export function SimpleWorkspaceView() {
 
       <Section
         title="Tailored Applications"
-        icon={FileText}
+        icon={MagicWandIcon}
         items={generated}
         emptyText="Nothing generated yet. Use ⌘K → Tailor CV or Draft Cover Letter."
         onOpen={openAt}
@@ -275,7 +356,7 @@ export function SimpleWorkspaceView() {
 
       <Section
         title="Captured Jobs"
-        icon={Briefcase}
+        icon={BriefcaseIcon}
         items={jobs}
         emptyText="No job postings captured yet."
         onOpen={openAt}
@@ -283,16 +364,22 @@ export function SimpleWorkspaceView() {
           <button
             title="Capture Job Posting"
             onClick={() => openJobCapture(true)}
-            className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)]"
+            className="group flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-[var(--color-text-muted)] transition-colors duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[var(--color-text)]"
           >
-            <Plus size={11} /> Capture
+            <PlusIcon
+              size={11}
+              className="transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-125 group-hover:text-[var(--color-icon-hover)] group-hover:drop-shadow-[0_5px_5px_var(--color-icon-hover-glow)]"
+            />
+            <span className="inline-block blur-none transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-90 group-hover:blur-[1px]">
+              Capture
+            </span>
           </button>
         }
       />
 
       <Section
         title="Cover Letter Templates"
-        icon={FileText}
+        icon={EnvelopeIcon}
         items={templates}
         emptyText="No templates yet — create one to reuse across applications."
         onOpen={openAt}
@@ -300,9 +387,15 @@ export function SimpleWorkspaceView() {
           <button
             title="New Template"
             onClick={() => setShowNewTemplate(true)}
-            className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)]"
+            className="group flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-[var(--color-text-muted)] transition-colors duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[var(--color-text)]"
           >
-            <Plus size={11} /> New
+            <PlusIcon
+              size={11}
+              className="transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-125 group-hover:text-[var(--color-icon-hover)] group-hover:drop-shadow-[0_5px_5px_var(--color-icon-hover-glow)]"
+            />
+            <span className="inline-block blur-none transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-90 group-hover:blur-[1px]">
+              New
+            </span>
           </button>
         }
       />

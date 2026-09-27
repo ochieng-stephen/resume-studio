@@ -1,4 +1,9 @@
 @import "tailwindcss";
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+@import "@fontsource/poppins/800.css";
 
 :root {
   --color-bg: #ffffff;
@@ -7,7 +12,26 @@
   --color-border: #d4d4d4;
   --color-text: #1e1e1e;
   --color-text-muted: #6e6e6e;
-  --color-accent: #2563eb;
+  /* Charcoal, not pure black — a softer, more refined "ink" than flat #000 while still reading
+     clearly as a neutral dark accent rather than a color. Deliberately NOT the same hex as dark
+     mode's accent below: a value this dark would be nearly invisible against dark mode's already-
+     near-black chrome (the same "black-on-near-black" pitfall already hit once with
+     --shadow-cabinet), so dark mode gets a lighter graphite instead — both read as "charcoal
+     black," calibrated per theme's own background. */
+  --color-accent: #2b2b2b;
+  /* Sidebar-only "cabinet" tokens — deliberately separate from --color-bg-secondary (used
+     app-wide) so the vintage-drawer warmth stays contained to the sidebar. */
+  --color-cabinet: #f6f0e6;
+  --color-cabinet-border: #ddcdb0;
+  /* Recessed-drawer shadow — a plain dark inset shadow reads fine against the light cream
+     cabinet fill, so no bottom rim-light is needed here. */
+  --shadow-cabinet: inset 0 1px 2px rgba(0, 0, 0, 0.12);
+  /* Floating-icon hover color/glow (DrawerPull's caret, QuickTool's icons) — amber (the content
+     accent) in light mode, but dark-mode-only this switches to --color-accent instead (see
+     below) per explicit user direction, so it's its own token rather than a hardcoded amber
+     reused in every component. */
+  --color-icon-hover: #c8975c;
+  --color-icon-hover-glow: color-mix(in srgb, #c8975c 60%, transparent);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,7 +42,27 @@
     --color-border: #3c3c3c;
     --color-text: #d4d4d4;
     --color-text-muted: #8a8a8a;
-    --color-accent: #3b82f6;
+    /* The exact same walnut used for light mode's --color-cabinet-border, reused verbatim (not
+       darkened/enriched) per explicit user direction — it's light enough to read clearly as a
+       warm accent against this theme's near-black chrome without needing any adjustment. */
+    --color-accent: #ddcdb0;
+    /* No walnut tint on the cabinet BACKGROUND fill in dark mode — tried two shades, both read
+       as "off" as a large-surface wash, so the cabinet cards fall back to the plain neutral
+       tokens here. The walnut warmth lives in --color-accent instead (see above) and in the
+       non-color cabinet cues (brass pull-ring, press feedback, slide-open). */
+    --color-cabinet: #252526;
+    --color-cabinet-border: #3c3c3c;
+    /* A plain dark inset shadow is nearly invisible against an already-near-black fill — black
+       on black has almost no contrast to show. Needs a much stronger top shadow *and* a subtle
+       light rim along the bottom edge (the contrast between the two is what sells "recessed"
+       here, not absolute darkness). */
+    --shadow-cabinet: inset 0 1px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+    /* Dark-mode-only: floating-icon hover color switches to the system accent (walnut) instead
+       of amber, per explicit user direction (first DrawerPull's caret, then extended to
+       QuickTool's icons). References --color-accent rather than a hardcoded hex so it stays in
+       sync automatically if that token's dark value ever changes. */
+    --color-icon-hover: var(--color-accent);
+    --color-icon-hover-glow: color-mix(in srgb, var(--color-accent) 60%, transparent);
   }
 }
 
@@ -31,7 +75,12 @@
   --color-border: #3c3c3c;
   --color-text: #d4d4d4;
   --color-text-muted: #8a8a8a;
-  --color-accent: #3b82f6;
+  --color-accent: #ddcdb0;
+  --color-cabinet: #252526;
+  --color-cabinet-border: #3c3c3c;
+  --shadow-cabinet: inset 0 1px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  --color-icon-hover: var(--color-accent);
+  --color-icon-hover-glow: color-mix(in srgb, var(--color-accent) 60%, transparent);
 }
 
 :root[data-theme="light"] {
@@ -41,7 +90,12 @@
   --color-border: #d4d4d4;
   --color-text: #1e1e1e;
   --color-text-muted: #6e6e6e;
-  --color-accent: #2563eb;
+  --color-accent: #2b2b2b;
+  --color-cabinet: #f6f0e6;
+  --color-cabinet-border: #ddcdb0;
+  --shadow-cabinet: inset 0 1px 2px rgba(0, 0, 0, 0.12);
+  --color-icon-hover: #c8975c;
+  --color-icon-hover-glow: color-mix(in srgb, #c8975c 60%, transparent);
 }
 
 html,
@@ -55,13 +109,14 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family:
-    -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, sans-serif;
+    Poppins, -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, sans-serif;
   font-size: 13px;
   overflow: hidden;
   user-select: none;
 }
 
 .md-preview {
+  font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
   font-size: 13px;
   line-height: 1.6;
   color: var(--color-text);

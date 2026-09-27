@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Plus } from "lucide-react";
+import { CaretDownIcon, PlusIcon } from "@phosphor-icons/react";
 import { invoke } from "@tauri-apps/api/core";
 import { useTerminalStore } from "../store/terminalStore";
 import { useSettingsStore } from "../store/settingsStore";
 import { TerminalInstance } from "./TerminalInstance";
 
-export function TerminalPanel() {
+export function TerminalPanel({ visible }: { visible: boolean }) {
   const tabs = useTerminalStore((s) => s.tabs);
   const agentPresets = useSettingsStore((s) => s.agentPresets);
   const activeId = useTerminalStore((s) => s.activeId);
@@ -46,14 +46,14 @@ export function TerminalPanel() {
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-[var(--color-bg-secondary)]">
-      <div className="flex h-8 shrink-0 items-center justify-between border-b border-[var(--color-border)] px-1">
+    <div className="flex min-h-0 flex-1 flex-col bg-[var(--color-cabinet)]">
+      <div className="flex h-8 shrink-0 items-center justify-between border-b border-[var(--color-cabinet-border)] px-1">
         <div className="flex h-full items-center overflow-x-auto">
           {tabs.map((tab) => (
             <div
               key={tab.id}
               onClick={() => setActive(tab.id)}
-              className={`flex h-full shrink-0 cursor-default items-center gap-1.5 border-r border-[var(--color-border)] px-2.5 text-xs ${
+              className={`flex h-full shrink-0 cursor-default items-center gap-1.5 border-r border-[var(--color-cabinet-border)] px-2.5 text-xs ${
                 tab.id === activeId
                   ? "bg-[var(--color-bg)] text-[var(--color-text)]"
                   : "text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)]"
@@ -76,7 +76,7 @@ export function TerminalPanel() {
             className="flex h-full items-center px-2 text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)]"
             onClick={() => addTab()}
           >
-            <Plus size={13} />
+            <PlusIcon size={13} />
           </button>
         </div>
         <div ref={menuRef} className="relative shrink-0 pr-1">
@@ -84,7 +84,7 @@ export function TerminalPanel() {
             className="flex items-center gap-1 rounded px-2 py-1 text-xs text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)]"
             onClick={() => setAgentMenuOpen((o) => !o)}
           >
-            Launch Agent <ChevronDown size={12} />
+            Launch Agent <CaretDownIcon size={12} />
           </button>
           {agentMenuOpen && (
             <div className="absolute right-0 top-full z-10 mt-1 min-w-[180px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg-secondary)] py-1 shadow-lg">
@@ -115,7 +115,12 @@ export function TerminalPanel() {
       </div>
       <div className="min-h-0 flex-1 px-2 py-1">
         {tabs.map((tab) => (
-          <TerminalInstance key={tab.id} id={tab.id} active={tab.id === activeId} />
+          <TerminalInstance
+            key={tab.id}
+            id={tab.id}
+            active={tab.id === activeId}
+            panelVisible={visible}
+          />
         ))}
       </div>
     </div>

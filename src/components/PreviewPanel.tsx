@@ -17,9 +17,9 @@ export function PreviewPanel() {
   return (
     <aside
       style={{ width: previewWidth }}
-      className="flex shrink-0 flex-col bg-[var(--color-bg-secondary)]"
+      className="flex shrink-0 flex-col bg-[var(--color-cabinet)]"
     >
-      <div className="flex items-center justify-between border-b border-[var(--color-border)] px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+      <div className="flex items-center justify-between border-b border-[var(--color-cabinet-border)] px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
         <span>Preview</span>
         {printable && (
           <div className="flex items-center gap-1 normal-case">

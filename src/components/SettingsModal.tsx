@@ -65,7 +65,7 @@ export function SettingsModal() {
                   key={t}
                   className={`flex-1 rounded border px-2 py-1.5 text-xs capitalize ${
                     theme === t
-                      ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-white"
+                      ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-bg)]"
                       : "border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-bg-tertiary)]"
                   }`}
                   onClick={() => setTheme(t)}

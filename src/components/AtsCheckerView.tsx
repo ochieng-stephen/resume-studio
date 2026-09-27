@@ -81,7 +81,7 @@ export function AtsCheckerView() {
       />
 
       <button
-        className="w-fit rounded bg-[var(--color-accent)] px-3 py-1.5 text-xs text-white hover:opacity-90 disabled:opacity-50"
+        className="w-fit rounded bg-[var(--color-accent)] px-3 py-1.5 text-xs text-[var(--color-bg)] hover:opacity-90 disabled:opacity-50"
         onClick={runCheck}
         disabled={!selectedPath || !jobDescription.trim() || checking}
       >

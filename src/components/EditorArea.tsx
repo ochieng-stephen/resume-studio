@@ -75,7 +75,7 @@ export function EditorArea() {
   if (tabs.length === 0) {
     return (
       <div className="flex flex-1 flex-col overflow-hidden">
-        <div className="flex h-9 shrink-0 items-center border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-2 text-xs text-[var(--color-text-muted)]">
+        <div className="flex h-9 shrink-0 items-center border-b border-[var(--color-cabinet-border)] bg-[var(--color-cabinet)] px-2 text-xs text-[var(--color-text-muted)]">
           No tabs open
         </div>
         <div className="flex flex-1 items-center justify-center text-sm text-[var(--color-text-muted)]">
@@ -87,7 +87,7 @@ export function EditorArea() {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="flex h-9 shrink-0 items-center overflow-x-auto border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+      <div className="flex h-9 shrink-0 items-center overflow-x-auto border-b border-[var(--color-cabinet-border)] bg-[var(--color-cabinet)]">
         {tabs.map((tab, index) => (
           <div
             key={tab.path}
@@ -103,7 +103,7 @@ export function EditorArea() {
               dragIndex.current = null;
             }}
             onClick={() => setActiveTab(tab.path)}
-            className={`flex h-full shrink-0 cursor-default items-center gap-1.5 border-r border-[var(--color-border)] px-3 text-xs ${
+            className={`flex h-full shrink-0 cursor-default items-center gap-1.5 border-r border-[var(--color-cabinet-border)] px-3 text-xs ${
               tab.path === activeTabPath
                 ? "bg-[var(--color-bg)] text-[var(--color-text)]"
                 : "text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)]"

@@ -20,9 +20,9 @@ export function Sidebar() {
   return (
     <aside
       style={{ width: sidebarWidth }}
-      className="flex shrink-0 flex-col bg-[var(--color-bg-secondary)]"
+      className="flex shrink-0 flex-col bg-[var(--color-cabinet)]"
     >
-      <div className="flex items-center justify-between border-b border-[var(--color-border)] px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+      <div className="flex items-center justify-between border-b border-[var(--color-cabinet-border)] px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
         <span className="truncate">{rootName ?? "Workspace"}</span>
         {rootPath && (
           <div className="flex items-center gap-1 normal-case">
@@ -44,13 +44,13 @@ export function Sidebar() {
                 </button>
               </>
             )}
-            <div className="flex rounded-full border border-[var(--color-border)] p-0.5">
+            <div className="flex rounded-full border border-[var(--color-cabinet-border)] p-0.5">
               <button
                 title="Simple view"
                 onClick={() => setMode("simple")}
                 className={`rounded-full px-2 py-0.5 text-[10px] ${
                   mode === "simple"
-                    ? "bg-[var(--color-accent)] text-white"
+                    ? "bg-[var(--color-accent)] text-[var(--color-bg)]"
                     : "text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)]"
                 }`}
               >
@@ -61,7 +61,7 @@ export function Sidebar() {
                 onClick={() => setMode("advanced")}
                 className={`rounded-full px-2 py-0.5 text-[10px] ${
                   mode === "advanced"
-                    ? "bg-[var(--color-accent)] text-white"
+                    ? "bg-[var(--color-accent)] text-[var(--color-bg)]"
                     : "text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)]"
                 }`}
               >
@@ -81,7 +81,7 @@ export function Sidebar() {
         <div className="flex flex-1 flex-col items-center justify-center gap-3 px-4 text-center">
           <p className="text-xs text-[var(--color-text-muted)]">No workspace open</p>
           <button
-            className="rounded border border-[var(--color-border)] px-3 py-1.5 text-xs hover:bg-[var(--color-bg-tertiary)]"
+            className="rounded border border-[var(--color-cabinet-border)] px-3 py-1.5 text-xs hover:bg-[var(--color-cabinet-border)]/30"
             onClick={openFolder}
           >
             Open Folder

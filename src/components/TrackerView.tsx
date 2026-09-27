@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { BarChart2, Plus, Trash2 } from "lucide-react";
+import { ChartBarIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import { useWorkspaceStore } from "../store/workspaceStore";
 import {
   Application,
@@ -160,13 +160,13 @@ export function TrackerView() {
             className="flex items-center gap-1 rounded border border-[var(--color-border)] px-2.5 py-1.5 text-xs hover:bg-[var(--color-bg-tertiary)]"
             onClick={() => setShowStats((v) => !v)}
           >
-            <BarChart2 size={13} /> {showStats ? "Hide Stats" : "Show Stats"}
+            <ChartBarIcon size={13} /> {showStats ? "Hide Stats" : "Show Stats"}
           </button>
           <button
-            className="flex items-center gap-1 rounded bg-[var(--color-accent)] px-2.5 py-1.5 text-xs text-white hover:opacity-90"
+            className="flex items-center gap-1 rounded bg-[var(--color-accent)] px-2.5 py-1.5 text-xs text-[var(--color-bg)] hover:opacity-90"
             onClick={() => setShowForm((v) => !v)}
           >
-            <Plus size={13} /> Add Application
+            <PlusIcon size={13} /> Add Application
           </button>
         </div>
       </div>
@@ -238,7 +238,7 @@ export function TrackerView() {
               Cancel
             </button>
             <button
-              className="rounded bg-[var(--color-accent)] px-2.5 py-1 text-xs text-white hover:opacity-90"
+              className="rounded bg-[var(--color-accent)] px-2.5 py-1 text-xs text-[var(--color-bg)] hover:opacity-90"
               onClick={submitForm}
               disabled={!form.company.trim() || !form.role.trim()}
             >
@@ -300,7 +300,7 @@ export function TrackerView() {
                       onClick={() => removeApplication(index)}
                       title="Remove"
                     >
-                      <Trash2 size={13} />
+                      <TrashIcon size={13} />
                     </button>
                   </td>
                 </tr>

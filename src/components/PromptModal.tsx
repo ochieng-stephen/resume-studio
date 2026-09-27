@@ -49,7 +49,7 @@ export function PromptModal({ title, placeholder, confirmLabel = "Create", onSub
               Cancel
             </button>
             <button
-              className="rounded bg-[var(--color-accent)] px-2.5 py-1 text-xs text-white hover:opacity-90 disabled:opacity-50"
+              className="rounded bg-[var(--color-accent)] px-2.5 py-1 text-xs text-[var(--color-bg)] hover:opacity-90 disabled:opacity-50"
               onClick={submit}
               disabled={!value.trim()}
             >

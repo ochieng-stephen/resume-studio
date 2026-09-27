@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import {
-  Briefcase,
-  FileEdit,
-  FileSearch,
-  GitCommit,
-  Mail,
-  Rocket,
-  Search,
-  Sparkles,
-  Table,
-  TrendingUp,
-} from "lucide-react";
+  BriefcaseIcon,
+  FileMagnifyingGlassIcon,
+  GitCommitIcon,
+  EnvelopeIcon,
+  MagnifyingGlassIcon,
+  NotePencilIcon,
+  RocketIcon,
+  SparkleIcon,
+  TableIcon,
+  TrendUpIcon,
+} from "@phosphor-icons/react";
 import { invoke } from "@tauri-apps/api/core";
 import { usePaletteStore } from "../store/paletteStore";
 import { useTabsStore } from "../store/tabsStore";
@@ -22,7 +22,7 @@ interface Action {
   id: string;
   label: string;
   description: string;
-  icon: typeof Search;
+  icon: typeof MagnifyingGlassIcon;
   needsInput: boolean;
   placeholder?: string;
   confirmLabel?: string;
@@ -34,7 +34,7 @@ const ACTIONS: Action[] = [
     id: "search",
     label: "Search Roles",
     description: "Find job openings matching your profile",
-    icon: Search,
+    icon: MagnifyingGlassIcon,
     needsInput: true,
     placeholder: 'Optional filters, e.g. "backend python remote"',
     run: (input) => sendToAgent(input.trim() ? `/search ${input.trim()}` : "/search"),
@@ -43,7 +43,7 @@ const ACTIONS: Action[] = [
     id: "tailor",
     label: "Tailor CV",
     description: "Optimize your CV/resume for a specific role",
-    icon: FileEdit,
+    icon: NotePencilIcon,
     needsInput: true,
     placeholder: "Job URL or description",
     run: (input) => sendToAgent(`/tailor ${input.trim()}`),
@@ -52,7 +52,7 @@ const ACTIONS: Action[] = [
     id: "cover-letter",
     label: "Draft Cover Letter",
     description: "Generate a targeted cover letter",
-    icon: Mail,
+    icon: EnvelopeIcon,
     needsInput: true,
     placeholder: "Job URL or company + role",
     run: (input) => sendToAgent(`/cover-letter ${input.trim()}`),
@@ -61,7 +61,7 @@ const ACTIONS: Action[] = [
     id: "strategy",
     label: "Review Strategy",
     description: "Analyze performance and get recommendations",
-    icon: TrendingUp,
+    icon: TrendUpIcon,
     needsInput: false,
     run: () => sendToAgent("/strategy"),
   },
@@ -69,7 +69,7 @@ const ACTIONS: Action[] = [
     id: "autopilot",
     label: "Autopilot",
     description: "Fully autonomous search → tailor → apply pipeline",
-    icon: Rocket,
+    icon: RocketIcon,
     needsInput: true,
     placeholder: 'Optional scope, e.g. "5 backend roles"',
     run: (input) => sendToAgent(input.trim() ? `/autopilot ${input.trim()}` : "/autopilot"),
@@ -78,7 +78,7 @@ const ACTIONS: Action[] = [
     id: "tracker",
     label: "Open Application Tracker",
     description: "View and manage tracked applications",
-    icon: Table,
+    icon: TableIcon,
     needsInput: false,
     run: () => useTabsStore.getState().openTrackerTab(),
   },
@@ -86,7 +86,7 @@ const ACTIONS: Action[] = [
     id: "ats",
     label: "Check ATS Match",
     description: "Local keyword match between a resume and a job description",
-    icon: FileSearch,
+    icon: FileMagnifyingGlassIcon,
     needsInput: false,
     run: () => useTabsStore.getState().openAtsTab(),
   },
@@ -94,7 +94,7 @@ const ACTIONS: Action[] = [
     id: "capture-job",
     label: "Capture Job Posting",
     description: "Save a job posting and optionally tailor your CV for it",
-    icon: Briefcase,
+    icon: BriefcaseIcon,
     needsInput: false,
     run: () => useJobCaptureStore.getState().setOpen(true),
   },
@@ -102,7 +102,7 @@ const ACTIONS: Action[] = [
     id: "snippets",
     label: "Snippet Library",
     description: "Reusable, quantified bullet points",
-    icon: Sparkles,
+    icon: SparkleIcon,
     needsInput: false,
     run: () => useTabsStore.getState().openSnippetsTab(),
   },
@@ -110,7 +110,7 @@ const ACTIONS: Action[] = [
     id: "search-files",
     label: "Search in Files",
     description: "Search across every file in the workspace",
-    icon: Search,
+    icon: MagnifyingGlassIcon,
     needsInput: false,
     run: () => useTabsStore.getState().openSearchTab(),
   },
@@ -118,7 +118,7 @@ const ACTIONS: Action[] = [
     id: "snapshot",
     label: "Save Snapshot",
     description: "Git-commit the current state of your workspace",
-    icon: GitCommit,
+    icon: GitCommitIcon,
     needsInput: true,
     placeholder: "Commit message (optional)",
     confirmLabel: "Save Snapshot",
@@ -229,7 +229,7 @@ export function CommandPalette() {
                 Back
               </button>
               <button
-                className="rounded bg-[var(--color-accent)] px-2 py-1 text-xs text-white hover:opacity-90"
+                className="rounded bg-[var(--color-accent)] px-2 py-1 text-xs text-[var(--color-bg)] hover:opacity-90"
                 onClick={() => runAction(selected, input)}
               >
                 {selected.confirmLabel ?? "Send to Agent"}

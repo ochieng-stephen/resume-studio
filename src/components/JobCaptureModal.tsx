@@ -147,7 +147,7 @@ export function JobCaptureModal() {
               Save
             </button>
             <button
-              className="rounded bg-[var(--color-accent)] px-2.5 py-1 text-xs text-white hover:opacity-90 disabled:opacity-50"
+              className="rounded bg-[var(--color-accent)] px-2.5 py-1 text-xs text-[var(--color-bg)] hover:opacity-90 disabled:opacity-50"
               onClick={() => submit(true)}
               disabled={disabled}
             >

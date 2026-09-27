@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Copy, Plus, Trash2 } from "lucide-react";
+import { CopyIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import { useWorkspaceStore } from "../store/workspaceStore";
 import { Snippet, SnippetLibrary, emptySnippetLibrary } from "../lib/snippets";
 
@@ -102,11 +102,11 @@ export function SnippetLibraryView() {
             onChange={(e) => setTags(e.target.value)}
           />
           <button
-            className="flex items-center gap-1 rounded bg-[var(--color-accent)] px-2.5 py-1 text-xs text-white hover:opacity-90 disabled:opacity-50"
+            className="flex items-center gap-1 rounded bg-[var(--color-accent)] px-2.5 py-1 text-xs text-[var(--color-bg)] hover:opacity-90 disabled:opacity-50"
             onClick={addSnippet}
             disabled={!text.trim()}
           >
-            <Plus size={13} /> Add
+            <PlusIcon size={13} /> Add
           </button>
         </div>
       </div>
@@ -144,14 +144,14 @@ export function SnippetLibraryView() {
                   onClick={() => copySnippet(s)}
                   title="Copy to clipboard"
                 >
-                  <Copy size={13} />
+                  <CopyIcon size={13} />
                 </button>
                 <button
                   className="rounded-sm p-1 text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)] hover:text-red-500"
                   onClick={() => removeSnippet(s.id)}
                   title="Delete"
                 >
-                  <Trash2 size={13} />
+                  <TrashIcon size={13} />
                 </button>
               </div>
             </div>

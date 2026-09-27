@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import {
-  ChevronDown,
-  ChevronRight,
-  File,
-  FileJson,
-  FileText,
-  Folder,
-  FolderOpen,
-} from "lucide-react";
+  CaretDownIcon,
+  CaretRightIcon,
+  FileIcon,
+  FileCodeIcon,
+  FileTextIcon,
+  FolderIcon,
+  FolderOpenIcon,
+} from "@phosphor-icons/react";
 import { useTabsStore } from "../store/tabsStore";
 import { useTreeStore } from "../store/treeStore";
 
@@ -19,9 +19,9 @@ interface DirEntryInfo {
 }
 
 function fileIcon(name: string) {
-  if (name.endsWith(".md")) return FileText;
-  if (name.endsWith(".json")) return FileJson;
-  return File;
+  if (name.endsWith(".md")) return FileTextIcon;
+  if (name.endsWith(".json")) return FileCodeIcon;
+  return FileIcon;
 }
 
 function NewEntryInput({ parentPath, isDir }: { parentPath: string; isDir: boolean }) {
@@ -141,7 +141,7 @@ function TreeNode({
     (edit?.type === "create-file" || edit?.type === "create-dir") &&
     edit.parentPath === entry.path;
 
-  const Icon = entry.is_dir ? (expanded ? FolderOpen : Folder) : fileIcon(entry.name);
+  const Icon = entry.is_dir ? (expanded ? FolderOpenIcon : FolderIcon) : fileIcon(entry.name);
 
   return (
     <div>
@@ -170,9 +170,9 @@ function TreeNode({
       >
         {entry.is_dir ? (
           expanded ? (
-            <ChevronDown size={12} className="shrink-0 text-[var(--color-text-muted)]" />
+            <CaretDownIcon size={12} className="shrink-0 text-[var(--color-text-muted)]" />
           ) : (
-            <ChevronRight size={12} className="shrink-0 text-[var(--color-text-muted)]" />
+            <CaretRightIcon size={12} className="shrink-0 text-[var(--color-text-muted)]" />
           )
         ) : (
           <span className="w-3 shrink-0" />

@@ -27,18 +27,18 @@ export function TagListInput({
 
   return (
     <div>
-      <label className="mb-1 block text-[11px] font-medium text-[var(--color-text-muted)]">
+      <label className="mb-1 block text-[11px] font-medium tracking-wide text-[var(--color-text-muted)]">
         {label}
       </label>
-      <div className="flex flex-wrap items-center gap-1.5 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] p-1.5">
+      <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-1.5 transition-colors hover:border-[var(--color-text-muted)] focus-within:border-[#c8975c] focus-within:ring-2 focus-within:ring-[#c8975c]/15">
         {values.map((v) => (
           <span
             key={v}
-            className="flex items-center gap-1 rounded-full bg-[var(--color-bg-tertiary)] px-2 py-0.5 text-[11px] text-[var(--color-text)]"
+            className="flex items-center gap-1 rounded-full bg-[var(--color-bg-tertiary)] py-1 pl-2.5 pr-1 text-[11px] text-[var(--color-text)]"
           >
             {v}
             <button
-              className="text-[var(--color-text-muted)] hover:text-red-500"
+              className="flex h-3.5 w-3.5 items-center justify-center rounded-full text-[var(--color-text-muted)] transition-colors hover:bg-red-500/15 hover:text-red-500"
               onClick={() => removeTag(v)}
             >
               ×
@@ -46,7 +46,7 @@ export function TagListInput({
           </span>
         ))}
         <input
-          className="min-w-[100px] flex-1 bg-transparent px-1 py-0.5 text-[11px] text-[var(--color-text)] outline-none"
+          className="min-w-[100px] flex-1 bg-transparent px-1 py-0.5 text-[11px] text-[var(--color-text)] outline-none placeholder:text-[var(--color-text-muted)]"
           placeholder={placeholder ?? "Add + Enter"}
           value={input}
           onChange={(e) => setInput(e.target.value)}
