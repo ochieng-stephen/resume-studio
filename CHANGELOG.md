@@ -20,8 +20,18 @@ All notable changes to Résumé Studio are documented here. This project adheres
 ### Changed
 - The `tailor`, `cover-letter`, and `strategy` agent skills are now portfolio-aware, surfacing
   real evidence and noting which entries they drew from.
+- **Refreshed interface**: a warmer, calmer visual system — walnut-and-charcoal cabinet chrome
+  extended across the whole app in light mode, Poppins typography, and a consistent floating
+  hover treatment (gentle scale, glow, and depth) on the drawer handles, quick actions, and
+  inline action buttons.
 - The Windows installer workflow now builds from the released tag (`ref: inputs.tag`) so the
   binary always matches the tagged commit.
+
+### Fixed
+- The terminal no longer loses its running session and scrollback when the panel is hidden and
+  reopened (toggle or ⌘J) — the shell now stays alive in the background.
+- Removed a brief flicker where terminal text and the cursor rendered oversized for a single
+  frame when the panel opened.
 
 ### Notes
 - Existing workspaces gain the `portfolio/` folder automatically on next open; edited files are
