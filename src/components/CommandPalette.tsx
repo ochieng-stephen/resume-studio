@@ -85,8 +85,8 @@ const ACTIONS: Action[] = [
   },
   {
     id: "ats",
-    label: "Check ATS Match",
-    description: "Local keyword match between a resume and a job description",
+    label: "Find Keyword Gaps",
+    description: "Keywords a job post uses that your resume is missing (an ATS-style check)",
     icon: FileMagnifyingGlassIcon,
     needsInput: false,
     run: () => useTabsStore.getState().openAtsTab(),

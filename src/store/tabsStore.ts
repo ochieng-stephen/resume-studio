@@ -88,7 +88,7 @@ export const useTabsStore = create<TabsState>((set, get) => ({
   },
 
   openTrackerTab: () => get().openSingletonTab("tracker", TRACKER_TAB_PATH, "Application Tracker"),
-  openAtsTab: () => get().openSingletonTab("ats", ATS_TAB_PATH, "ATS Match Checker"),
+  openAtsTab: () => get().openSingletonTab("ats", ATS_TAB_PATH, "Keyword Match"),
   openSnippetsTab: () => get().openSingletonTab("snippets", SNIPPETS_TAB_PATH, "Snippet Library"),
   openSearchTab: () => get().openSingletonTab("search", SEARCH_TAB_PATH, "Search in Files"),
 

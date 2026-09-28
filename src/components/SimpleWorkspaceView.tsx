@@ -329,7 +329,7 @@ export function SimpleWorkspaceView() {
         </div>
         <div className="flex gap-2 border-t border-[var(--color-cabinet-border)] p-2">
           <QuickTool icon={TableIcon} label="Tracker" onClick={openTrackerTab} tone="var(--icon-gold)" />
-          <QuickTool icon={FileMagnifyingGlassIcon} label="ATS Check" onClick={openAtsTab} tone="var(--icon-sage)" />
+          <QuickTool icon={FileMagnifyingGlassIcon} label="Keyword Gaps" onClick={openAtsTab} tone="var(--icon-sage)" />
           <QuickTool icon={CardsThreeIcon} label="Snippets" onClick={openSnippetsTab} tone="var(--icon-plum)" />
           <QuickTool icon={MagnifyingGlassIcon} label="Search" onClick={openSearchTab} tone="var(--icon-ochre)" />
         </div>

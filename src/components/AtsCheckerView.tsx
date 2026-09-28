@@ -36,7 +36,7 @@ export function AtsCheckerView() {
   if (!rootPath) {
     return (
       <div className="flex flex-1 items-center justify-center text-sm text-[var(--color-text-muted)]">
-        Open a workspace to use the ATS match checker
+        Open a workspace to use the keyword match checker
       </div>
     );
   }
@@ -52,10 +52,11 @@ export function AtsCheckerView() {
 
   return (
     <div className="flex flex-1 flex-col gap-3 overflow-auto p-4">
-      <h2 className="text-sm font-semibold text-[var(--color-text)]">ATS Match Checker</h2>
-      <p className="text-xs text-[var(--color-text-muted)]">
-        Local keyword matching, no AI. It approximates how an applicant-tracking system scans your
-        resume against a job description.
+      <h2 className="text-sm font-semibold text-[var(--color-text)]">Keyword Match</h2>
+      <p className="text-xs leading-relaxed text-[var(--color-text-muted)]">
+        Finds the keywords a job post emphasizes that your resume does not mention yet, so you can
+        close real gaps before you apply. A tailoring aid, not a real ATS score: only add terms you
+        genuinely have, in your own words. Runs locally, no AI.
       </p>
 
       <SelectField
@@ -84,7 +85,7 @@ export function AtsCheckerView() {
         onClick={runCheck}
         disabled={!selectedPath || !jobDescription.trim() || checking}
       >
-        {checking ? "Checking…" : "Check Match"}
+        {checking ? "Checking…" : "Check Coverage"}
       </button>
 
       {result && (
@@ -92,14 +93,14 @@ export function AtsCheckerView() {
           <div className="flex items-baseline gap-2">
             <span className={`text-2xl font-bold ${scoreColor}`}>{result.score}%</span>
             <span className="text-xs text-[var(--color-text-muted)]">
-              keyword match ({result.matched.length}/{result.matched.length + result.missing.length}
-              )
+              keyword coverage ({result.matched.length}/
+              {result.matched.length + result.missing.length})
             </span>
           </div>
 
           <div>
             <h3 className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
-              Matched ({result.matched.length})
+              Covered ({result.matched.length})
             </h3>
             <div className="flex flex-wrap gap-1.5">
               {result.matched.map((k) => (
