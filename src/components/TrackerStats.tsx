@@ -1,5 +1,11 @@
 import { usePrefersDark } from "../hooks/usePrefersDark";
-import { STATUSES, StatBreakdown, TrackerStats as TrackerStatsData } from "../lib/tracker";
+import {
+  ApplicationStatus,
+  StatBreakdown,
+  STATUS_TONE,
+  STATUS_TONE_COLOR,
+  TrackerStats as TrackerStatsData,
+} from "../lib/tracker";
 
 // Validated categorical palette (dataviz skill, references/palette.md) — fixed
 // slot order per entity, never re-cycled by count/rank.
@@ -80,8 +86,14 @@ function BreakdownSection({
 }
 
 export function TrackerStatsView({ stats }: { stats: TrackerStatsData }) {
-  const color = useCategoricalColor();
+  const dark = usePrefersDark();
   const maxStatus = Math.max(...stats.byStatus.map((s) => s.count), 1);
+  // Colour each status by its emotional tone (wins warm, closed-negatives muted), not by an
+  // arbitrary categorical slot — so the funnel reads calm and affirming at a glance.
+  const statusColor = (s: ApplicationStatus) => {
+    const tone = STATUS_TONE_COLOR[STATUS_TONE[s]];
+    return dark ? tone.dark : tone.light;
+  };
 
   return (
     <div className="flex flex-col gap-4 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-3">
@@ -97,13 +109,13 @@ export function TrackerStatsView({ stats }: { stats: TrackerStatsData }) {
           By Status
         </h3>
         <div className="flex flex-col gap-1">
-          {stats.byStatus.map((s, i) => (
+          {stats.byStatus.map((s) => (
             <Bar
               key={s.status}
-              label={STATUSES[i]}
+              label={s.status}
               count={s.count}
               max={maxStatus}
-              color={color(i)}
+              color={statusColor(s.status)}
             />
           ))}
         </div>
