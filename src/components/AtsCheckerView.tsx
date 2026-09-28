@@ -3,7 +3,14 @@ import { invoke } from "@tauri-apps/api/core";
 import { useWorkspaceStore } from "../store/workspaceStore";
 import { DirEntryInfo, listCvCandidates } from "../lib/cvCandidates";
 import { AtsResult, checkAtsMatch } from "../lib/atsMatch";
+import { checkFormat, FormatFinding, FormatStatus } from "../lib/formatCheck";
 import { SelectField, TextareaField } from "./FormField";
+
+const FINDING_COLOR: Record<FormatStatus, string> = {
+  ok: "var(--icon-sage)",
+  warn: "#c8975c",
+  info: "var(--color-text-muted)",
+};
 
 export function AtsCheckerView() {
   const rootPath = useWorkspaceStore((s) => s.rootPath);
@@ -11,6 +18,7 @@ export function AtsCheckerView() {
   const [selectedPath, setSelectedPath] = useState<string>("");
   const [jobDescription, setJobDescription] = useState("");
   const [result, setResult] = useState<AtsResult | null>(null);
+  const [findings, setFindings] = useState<FormatFinding[]>([]);
   const [checking, setChecking] = useState(false);
 
   useEffect(() => {
@@ -26,8 +34,17 @@ export function AtsCheckerView() {
     if (!selectedPath || !jobDescription.trim()) return;
     setChecking(true);
     try {
-      const resumeText = await invoke<string>("read_text_file", { path: selectedPath });
-      setResult(checkAtsMatch(jobDescription, resumeText));
+      const filename = selectedPath.split("/").pop() ?? selectedPath;
+      // read_text_file requires valid UTF-8, so binary resumes (PDF/DOCX) throw here. Treat that as
+      // "unreadable" rather than letting it silently fail, and still run the format guidance.
+      let resumeText: string | null = null;
+      try {
+        resumeText = await invoke<string>("read_text_file", { path: selectedPath });
+      } catch {
+        resumeText = null;
+      }
+      setFindings(checkFormat(filename, resumeText));
+      setResult(resumeText !== null ? checkAtsMatch(jobDescription, resumeText) : null);
     } finally {
       setChecking(false);
     }
@@ -138,6 +155,28 @@ export function AtsCheckerView() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {findings.length > 0 && (
+        <div className="mt-1 flex flex-col gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-3">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+            Format check
+          </h3>
+          {findings.map((f) => (
+            <div key={f.id} className="flex gap-2">
+              <span
+                className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full"
+                style={{ background: FINDING_COLOR[f.status] }}
+              />
+              <div className="min-w-0">
+                <div className="text-xs font-medium text-[var(--color-text)]">{f.label}</div>
+                <div className="text-[11px] leading-relaxed text-[var(--color-text-muted)]">
+                  {f.detail}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
