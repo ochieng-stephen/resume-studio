@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useJobCaptureStore } from "../store/jobCaptureStore";
 import { useWorkspaceStore } from "../store/workspaceStore";
@@ -7,7 +7,48 @@ import { buildJobCaptureFile } from "../lib/jobCapture";
 import { sendToAgent } from "../lib/agentBridge";
 import { rankPortfolioItems } from "../lib/atsMatch";
 import { PortfolioItem, normalizePortfolio } from "../lib/portfolio";
+import {
+  emptyTracker,
+  normalizeApplication,
+  normalizeTracker,
+  regenerateDashboard,
+  today,
+} from "../lib/tracker";
 import { Field, TextareaField } from "./FormField";
+
+// Adds the captured job to the tracker as a "saved" (to-apply) entry, so capturing and tracking are
+// one loop instead of two separate stores. Silently skips if the same company + role is already
+// tracked, to avoid duplicates on a re-capture.
+async function addSavedToTracker(rootPath: string, company: string, role: string, url: string) {
+  const trackerPath = `${rootPath}/tracker/applications.json`;
+  const dashboardPath = `${rootPath}/tracker/dashboard.md`;
+  let data;
+  try {
+    data = normalizeTracker(JSON.parse(await invoke<string>("read_text_file", { path: trackerPath })));
+  } catch {
+    data = emptyTracker();
+  }
+  const dupe = data.applications.some(
+    (a) =>
+      a.company.trim().toLowerCase() === company.trim().toLowerCase() &&
+      a.role.trim().toLowerCase() === role.trim().toLowerCase(),
+  );
+  if (dupe) return;
+  data.applications.push(
+    normalizeApplication({
+      company: company.trim(),
+      role: role.trim(),
+      status: "saved",
+      dateApplied: "", // not applied yet; stamped when it graduates to "applied"
+      notes: url.trim() ? `Source: ${url.trim()}` : "",
+      nextStep: "Apply",
+    }),
+  );
+  data.lastUpdated = today();
+  await invoke("create_dir", { path: `${rootPath}/tracker` }).catch(() => {});
+  await invoke("write_text_file", { path: trackerPath, contents: JSON.stringify(data, null, 2) });
+  await invoke("write_text_file", { path: dashboardPath, contents: regenerateDashboard(data) });
+}
 
 export function JobCaptureModal() {
   const open = useJobCaptureStore((s) => s.open);
@@ -19,6 +60,7 @@ export function JobCaptureModal() {
   const [url, setUrl] = useState("");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
+  const [addToTracker, setAddToTracker] = useState(true);
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
 
   useEffect(() => {
@@ -36,6 +78,26 @@ export function JobCaptureModal() {
       .slice(0, 3);
   }, [role, description, portfolioItems]);
 
+  // Keyboard: Escape closes, Cmd/Ctrl+Enter saves (plain Enter is left for the textarea). These
+  // hooks MUST stay above the `if (!open) return null` early return — a conditional hook count
+  // crashes React. close/submit are defined below, so they're reached via refs updated each render.
+  const submitRef = useRef<(thenTailor: boolean) => void>(() => {});
+  const closeRef = useRef<() => void>(() => {});
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeRef.current();
+      } else if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        submitRef.current(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   if (!open) return null;
 
   const reset = () => {
@@ -43,6 +105,7 @@ export function JobCaptureModal() {
     setRole("");
     setUrl("");
     setDescription("");
+    setAddToTracker(true);
   };
 
   const close = () => {
@@ -58,6 +121,7 @@ export function JobCaptureModal() {
       await invoke("create_dir", { path: `${rootPath}/jobs` }).catch(() => {});
       const path = `${rootPath}/jobs/${filename}`;
       await invoke("write_text_file", { path, contents: content });
+      if (addToTracker) await addSavedToTracker(rootPath, company, role, url).catch(() => {});
       await openFile(path, filename);
       if (thenTailor) {
         sendToAgent(`/tailor See jobs/${filename} for the job posting details.`);
@@ -67,8 +131,12 @@ export function JobCaptureModal() {
       setSaving(false);
     }
   };
+  // Keep the latest close/submit reachable from the keyboard effect without re-subscribing.
+  submitRef.current = submit;
+  closeRef.current = close;
 
   const disabled = saving || !company.trim() || !role.trim();
+  const jdText = `${role} ${description}`.trim();
 
   return (
     <div
@@ -136,6 +204,29 @@ export function JobCaptureModal() {
             </div>
           )}
 
+          {matches.length === 0 && jdText.length >= 12 && (
+            <div className="rounded-md border border-dashed border-[var(--color-border)] p-2 text-[10px] leading-relaxed text-[var(--color-text-muted)]">
+              {portfolioItems.length === 0
+                ? "Add projects to your Portfolio so tailoring can cite real, relevant work."
+                : "No strong Portfolio matches for this role yet. Tailoring still works; adding relevant projects makes it stronger."}
+            </div>
+          )}
+
+          <label className="flex items-center gap-1.5 pt-1 text-[11px] text-[var(--color-text-muted)]">
+            <input
+              type="checkbox"
+              checked={addToTracker}
+              onChange={(e) => setAddToTracker(e.target.checked)}
+            />
+            Add to my tracker as a job to apply to
+          </label>
+
+          {!description.trim() && (
+            <p className="text-[10px] text-[var(--color-text-muted)]">
+              Add the job description to enable tailoring.
+            </p>
+          )}
+
           <div className="flex justify-end gap-2 pt-1">
             <button
               className="rounded px-2.5 py-1 text-xs text-[var(--color-text-muted)] hover:bg-[var(--color-bg-tertiary)]"
@@ -153,7 +244,8 @@ export function JobCaptureModal() {
             <button
               className="rounded bg-[var(--color-accent)] px-2.5 py-1 text-xs text-[var(--color-bg)] hover:opacity-90 disabled:opacity-50"
               onClick={() => submit(true)}
-              disabled={disabled}
+              disabled={disabled || !description.trim()}
+              title={!description.trim() ? "Paste the job description first" : undefined}
             >
               Save &amp; Tailor
             </button>

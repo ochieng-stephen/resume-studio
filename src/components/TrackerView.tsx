@@ -70,7 +70,7 @@ const DEFAULT_DIR: Record<SortKey, "asc" | "desc"> = {
 };
 
 // The at-a-glance numbers double as filters: click one to focus the table on those applications.
-type FilterKey = "active" | "interviewing" | "offers";
+type FilterKey = "saved" | "active" | "interviewing" | "offers";
 
 // One affirming number in the at-a-glance strip. Doubles as a filter toggle when it has an
 // onClick — but only when there's something to filter to (a count of 0 stays inert, so you can
@@ -222,12 +222,21 @@ export function TrackerView() {
     setForm(emptyForm);
   };
 
-  // Status transitions stay here (not in the edit form) so response-date semantics live in one place.
+  // Status transitions stay here (not in the edit form) so date semantics live in one place:
+  // responseDate is stamped on the first real response (not on "saved"), and dateApplied is stamped
+  // when a saved job first graduates to "applied" so the pipeline dates stay honest.
   const updateStatus = (index: number, status: ApplicationStatus) => {
     if (!data) return;
     const applications = data.applications.map((a, i) =>
       i === index
-        ? { ...a, status, responseDate: status !== "applied" ? today() : a.responseDate }
+        ? {
+            ...a,
+            status,
+            dateApplied:
+              a.status === "saved" && status !== "saved" && !a.dateApplied ? today() : a.dateApplied,
+            responseDate:
+              status !== "applied" && status !== "saved" ? today() : a.responseDate,
+          }
         : a,
     );
     persist({ ...data, applications });
@@ -290,8 +299,11 @@ export function TrackerView() {
 
   const statusMatchesFilter = (s: ApplicationStatus): boolean => {
     switch (filter) {
+      case "saved":
+        return s === "saved";
       case "active":
-        return isOpen(s);
+        // Matches the "in progress" glance: in the pipeline, but not the saved shortlist.
+        return isOpen(s) && s !== "saved";
       case "interviewing":
         return s === "interview";
       case "offers":
@@ -415,6 +427,13 @@ export function TrackerView() {
       {/* Affirming, forward-looking at-a-glance strip — leads with momentum, not a response rate. */}
       {data.applications.length > 0 && (
         <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-3 py-2 text-xs">
+          <Glance
+            label="to apply"
+            value={stats.saved}
+            color={statusColor("saved")}
+            active={filter === "saved"}
+            onClick={() => toggleFilter("saved")}
+          />
           <Glance
             label="in progress"
             value={stats.active}
@@ -662,7 +681,7 @@ export function TrackerView() {
                     </td>
                     <td className="px-2 py-1.5 text-[var(--color-text)]">{app.role}</td>
                     <td className="px-2 py-1.5 tabular-nums text-[var(--color-text-muted)]">
-                      {app.dateApplied}
+                      {app.dateApplied || "·"}
                     </td>
                     <td className="px-2 py-1.5">
                       {/* Filled status pill — a soft tint of the status colour (mixed with the

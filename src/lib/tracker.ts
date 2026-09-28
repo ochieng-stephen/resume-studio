@@ -1,4 +1,5 @@
 export type ApplicationStatus =
+  | "saved"
   | "applied"
   | "viewed"
   | "interview"
@@ -7,7 +8,10 @@ export type ApplicationStatus =
   | "accepted"
   | "ghosted";
 
+// Funnel order (also the sort order for the Status column): "saved" is the pre-application stage —
+// a job you've captured and plan to apply to, but haven't yet.
 export const STATUSES: ApplicationStatus[] = [
+  "saved",
   "applied",
   "viewed",
   "interview",
@@ -20,9 +24,10 @@ export const STATUSES: ApplicationStatus[] = [
 // Emotional grouping for calm, affirming display: wins are highlighted, closed-negative outcomes
 // are muted rather than alarming (an anxious job seeker doesn't need a wall of red), and in-flight
 // applications read as neutral progress. Drives both the stats bars and the row status colour.
-export type StatusTone = "active" | "progress" | "positive" | "celebrate" | "muted";
+export type StatusTone = "planned" | "active" | "progress" | "positive" | "celebrate" | "muted";
 
 export const STATUS_TONE: Record<ApplicationStatus, StatusTone> = {
+  saved: "planned",
   applied: "active",
   viewed: "progress",
   interview: "positive",
@@ -33,6 +38,7 @@ export const STATUS_TONE: Record<ApplicationStatus, StatusTone> = {
 };
 
 export const STATUS_TONE_COLOR: Record<StatusTone, { light: string; dark: string }> = {
+  planned: { light: "#78849c", dark: "#98a4bc" }, // soft slate — parked, to apply
   active: { light: "#6b7280", dark: "#9aa3b2" }, // neutral — in flight
   progress: { light: "#2a78d6", dark: "#3987e5" }, // calm blue — moving
   positive: { light: "#1baf7a", dark: "#199e70" }, // green — good news
@@ -40,8 +46,9 @@ export const STATUS_TONE_COLOR: Record<StatusTone, { light: string; dark: string
   muted: { light: "#9ca3af", dark: "#6b7280" }, // quiet grey — closed, de-emphasised
 };
 
-// "In flight" — could still go somewhere. Closed outcomes (rejected/accepted/ghosted) are not.
-const OPEN_STATUSES: ApplicationStatus[] = ["applied", "viewed", "interview", "offered"];
+// "In flight" — could still go somewhere. Includes "saved" so an apply-by follow-up still surfaces;
+// excludes only the closed outcomes (rejected/accepted/ghosted).
+const OPEN_STATUSES: ApplicationStatus[] = ["saved", "applied", "viewed", "interview", "offered"];
 export function isOpen(status: ApplicationStatus): boolean {
   return OPEN_STATUSES.includes(status);
 }
@@ -121,6 +128,7 @@ export interface TrackerStats {
   total: number;
   responded: number;
   responseRatePct: number;
+  saved: number;
   active: number;
   interviewing: number;
   offers: number;
@@ -136,9 +144,13 @@ export function computeStats(data: TrackerData): TrackerStats {
     status,
     count: apps.filter((a) => a.status === status).length,
   }));
-  const responded = apps.filter((a) => a.status !== "applied" && a.status !== "ghosted").length;
-  const responseRatePct = total > 0 ? Math.round((responded / total) * 100) : 0;
-  const active = apps.filter((a) => isOpen(a.status)).length;
+  // Saved jobs aren't applications yet, so they're excluded from the response-rate maths.
+  const submitted = apps.filter((a) => a.status !== "saved");
+  const responded = submitted.filter((a) => a.status !== "applied" && a.status !== "ghosted").length;
+  const responseRatePct = submitted.length > 0 ? Math.round((responded / submitted.length) * 100) : 0;
+  const saved = apps.filter((a) => a.status === "saved").length;
+  // "In progress" = actually in the pipeline (applied through offered), not the saved shortlist.
+  const active = apps.filter((a) => isOpen(a.status) && a.status !== "saved").length;
   const interviewing = apps.filter((a) => a.status === "interview").length;
   const offers = apps.filter((a) => a.status === "offered" || a.status === "accepted").length;
 
@@ -160,15 +172,19 @@ export function computeStats(data: TrackerData): TrackerStats {
     .map(([label, count]) => ({ label, count }))
     .sort((a, b) => b.count - a.count);
 
-  return { total, responded, responseRatePct, active, interviewing, offers, byStatus, byPlatform, byCvVersion };
+  return { total, responded, responseRatePct, saved, active, interviewing, offers, byStatus, byPlatform, byCvVersion };
 }
 
 export function regenerateDashboard(data: TrackerData): string {
   const apps = data.applications;
   const total = apps.length;
   const countByStatus = (s: ApplicationStatus) => apps.filter((a) => a.status === s).length;
-  const responded = apps.filter((a) => a.status !== "applied" && a.status !== "ghosted").length;
-  const responseRate = total > 0 ? `${Math.round((responded / total) * 100)}% (${responded}/${total})` : "N/A";
+  const submitted = apps.filter((a) => a.status !== "saved");
+  const responded = submitted.filter((a) => a.status !== "applied" && a.status !== "ghosted").length;
+  const responseRate =
+    submitted.length > 0
+      ? `${Math.round((responded / submitted.length) * 100)}% (${responded}/${submitted.length})`
+      : "N/A";
 
   const recent = [...apps]
     .sort((a, b) => b.dateApplied.localeCompare(a.dateApplied))
@@ -188,7 +204,8 @@ export function regenerateDashboard(data: TrackerData): string {
   lines.push("## Summary");
   lines.push("| Metric | Count |");
   lines.push("|--------|-------|");
-  lines.push(`| Total Applications | ${total} |`);
+  lines.push(`| Total Tracked | ${total} |`);
+  lines.push(`| Saved (to apply) | ${countByStatus("saved")} |`);
   lines.push(`| Applied | ${countByStatus("applied")} |`);
   lines.push(`| Viewed | ${countByStatus("viewed")} |`);
   lines.push(`| Interview | ${countByStatus("interview")} |`);
