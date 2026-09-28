@@ -4,6 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useTerminalStore } from "../store/terminalStore";
 import { useSettingsStore } from "../store/settingsStore";
 import { TerminalInstance } from "./TerminalInstance";
+import { FIELD_FOCUS } from "./FormField";
 
 export function TerminalPanel({ visible }: { visible: boolean }) {
   const tabs = useTerminalStore((s) => s.tabs);
@@ -100,7 +101,7 @@ export function TerminalPanel({ visible }: { visible: boolean }) {
               <div className="my-1 border-t border-[var(--color-border)]" />
               <div className="flex items-center gap-1 px-2 py-1">
                 <input
-                  className="w-full rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-0.5 text-xs outline-none"
+                  className={`w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-1 text-xs outline-none ${FIELD_FOCUS}`}
                   placeholder="custom command"
                   value={customAgent}
                   onChange={(e) => setCustomAgent(e.target.value)}

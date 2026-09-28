@@ -10,7 +10,7 @@ import {
   MagicWandIcon,
   PlusIcon,
   MagnifyingGlassIcon,
-  SparkleIcon,
+  CardsThreeIcon,
   TableIcon,
 } from "@phosphor-icons/react";
 import { useWorkspaceStore } from "../store/workspaceStore";
@@ -58,10 +58,12 @@ function QuickTool({
   icon: Icon,
   label,
   onClick,
+  tone,
 }: {
   icon: typeof TableIcon;
   label: string;
   onClick: () => void;
+  tone: string;
 }) {
   return (
     <button
@@ -83,8 +85,8 @@ function QuickTool({
           quick actions icons" — an explicit, deliberate departure from a vertical-lift hover, not
           an oversight. The icon sits bare — no badge/box behind
           it at rest OR on hover ("do not add a background on hover on the quick action icons") —
-          resting color bumped from muted to full `--color-text` to keep the thin/light-weight
-          stroke legible without a plate grounding it; the glow `drop-shadow` on hover is what
+          resting color is a per-tool tone from the --icon-* triad (via the `tone` prop) so the
+          thin/light-weight stroke stays legible and branded without a plate grounding it; the glow `drop-shadow` on hover is what
           signals interactivity instead of a background tint. No stroke-thickening here (unlike
           DrawerPull.tsx) — every sub-pixel offset tried (0.4px, 0.6px) tested as correctly
           applying in Chromium/Playwright but was reported invisible in the real app, most likely
@@ -103,7 +105,8 @@ function QuickTool({
         <Icon
           size={15}
           weight="light"
-          className="text-[var(--color-text)] transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0.5 group-hover:scale-110 group-hover:text-[var(--color-icon-hover)] group-hover:drop-shadow-[0_6px_6px_var(--color-icon-hover-glow)]"
+          style={{ color: tone }}
+          className="transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0.5 group-hover:scale-110 group-hover:drop-shadow-[0_6px_6px_var(--color-icon-hover-glow)]"
         />
       </span>
       {/* Reserves 2-line height so a longer label (e.g. "ATS Check") doesn't make its button
@@ -123,6 +126,7 @@ function QuickTool({
 function Section({
   title,
   icon: Icon,
+  iconColor,
   items,
   emptyText,
   onOpen,
@@ -130,6 +134,7 @@ function Section({
 }: {
   title: string;
   icon: typeof FilesIcon;
+  iconColor?: string;
   items: Item[];
   emptyText: string;
   onOpen: (path: string) => void;
@@ -138,7 +143,11 @@ function Section({
   return (
     <div className="rounded-md border border-[var(--color-cabinet-border)] bg-[var(--color-cabinet)] shadow-[var(--shadow-cabinet)]">
       <div className="flex items-center gap-2 px-3 py-2.5">
-        <Icon size={14} className="shrink-0 text-[var(--color-text-muted)]" />
+        <Icon
+          size={14}
+          className="shrink-0 text-[var(--color-text-muted)]"
+          style={iconColor ? { color: iconColor } : undefined}
+        />
         <h3 className="flex-1 truncate text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
           {title}
         </h3>
@@ -179,6 +188,23 @@ function Section({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// A quiet "chapter heading" that breaks the otherwise-uniform top-to-bottom stack of cards into
+// a few labelled zones, so the eye can chunk the sidebar into groups before reading any single
+// panel title. Deliberately understated per the app's calm, dignified feel — a small uppercase
+// caption in the muted walnut tone with a hairline rule trailing to the edge, not a heavy
+// full-width divider. The baked-in top margin (larger than the gap below it) is what visually
+// ties the label to the group that follows while opening a clear break from the group above.
+function GroupLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mt-3 flex items-center gap-2.5 px-1">
+      <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--color-text-muted)]">
+        {children}
+      </span>
+      <span className="h-px flex-1 bg-[var(--color-cabinet-border)]" />
     </div>
   );
 }
@@ -289,30 +315,35 @@ export function SimpleWorkspaceView() {
     <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
       <div className="rounded-md border border-[var(--color-cabinet-border)] bg-[var(--color-cabinet)] shadow-[var(--shadow-cabinet)]">
         <div className="flex items-center gap-2 px-3 py-2.5">
-          <LightningIcon size={14} className="shrink-0 text-[var(--color-text-muted)]" />
+          <LightningIcon size={14} className="shrink-0 text-[var(--icon-gold)]" />
           <h3 className="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
             Quick Actions
           </h3>
         </div>
         <div className="flex gap-2 border-t border-[var(--color-cabinet-border)] p-2">
-          <QuickTool icon={TableIcon} label="Tracker" onClick={openTrackerTab} />
-          <QuickTool icon={FileMagnifyingGlassIcon} label="ATS Check" onClick={openAtsTab} />
-          <QuickTool icon={SparkleIcon} label="Snippets" onClick={openSnippetsTab} />
-          <QuickTool icon={MagnifyingGlassIcon} label="Search" onClick={openSearchTab} />
+          <QuickTool icon={TableIcon} label="Tracker" onClick={openTrackerTab} tone="var(--icon-gold)" />
+          <QuickTool icon={FileMagnifyingGlassIcon} label="ATS Check" onClick={openAtsTab} tone="var(--icon-sage)" />
+          <QuickTool icon={CardsThreeIcon} label="Snippets" onClick={openSnippetsTab} tone="var(--icon-plum)" />
+          <QuickTool icon={MagnifyingGlassIcon} label="Search" onClick={openSearchTab} tone="var(--icon-ochre)" />
         </div>
       </div>
 
       <SlashCommandGuide />
 
+      <GroupLabel>About You</GroupLabel>
+
       <ProfileEditor rootPath={rootPath} />
 
       <PortfolioEditor rootPath={rootPath} />
 
+      <GroupLabel>Documents</GroupLabel>
+
       <Section
         title="My CVs & Resumes"
         icon={FilesIcon}
+        iconColor="var(--icon-gold)"
         items={cvResumes}
-        emptyText="No CVs or resumes yet — import your current one to get started."
+        emptyText="No CVs or resumes yet. Import your current one to get started."
         onOpen={openAt}
         actions={
           <>
@@ -349,6 +380,7 @@ export function SimpleWorkspaceView() {
       <Section
         title="Tailored Applications"
         icon={MagicWandIcon}
+        iconColor="var(--icon-plum)"
         items={generated}
         emptyText="Nothing generated yet. Use ⌘K → Tailor CV or Draft Cover Letter."
         onOpen={openAt}
@@ -357,6 +389,7 @@ export function SimpleWorkspaceView() {
       <Section
         title="Captured Jobs"
         icon={BriefcaseIcon}
+        iconColor="var(--icon-ochre)"
         items={jobs}
         emptyText="No job postings captured yet."
         onOpen={openAt}
@@ -380,8 +413,9 @@ export function SimpleWorkspaceView() {
       <Section
         title="Cover Letter Templates"
         icon={EnvelopeIcon}
+        iconColor="var(--icon-gold)"
         items={templates}
-        emptyText="No templates yet — create one to reuse across applications."
+        emptyText="No templates yet. Create one to reuse across applications."
         onOpen={openAt}
         actions={
           <button
@@ -403,6 +437,7 @@ export function SimpleWorkspaceView() {
       {showNewTemplate && (
         <PromptModal
           title="New Cover Letter Template"
+          label="Template name"
           placeholder='e.g. "Startup / Founder-led"'
           confirmLabel="Create"
           onSubmit={createTemplate}

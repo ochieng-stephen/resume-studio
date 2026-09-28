@@ -1,24 +1,10 @@
-import { useEffect, useRef, useState, type InputHTMLAttributes } from "react";
+import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { UserCircleIcon } from "@phosphor-icons/react";
 import { Profile, emptyProfile, normalizeProfile } from "../lib/profile";
 import { DrawerPull } from "./DrawerPull";
 import { TagListInput } from "./TagListInput";
-
-// Shared shape/feel for every field in this panel: soft corners and a warm amber focus glow
-// (the same accent the portfolio cards use) instead of the browser default, so filling in your
-// own information feels attended-to rather than like a bare dev-tool form.
-const INPUT_CLASS =
-  "w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-1.5 text-xs text-[var(--color-text)] outline-none transition-colors placeholder:text-[var(--color-text-muted)] hover:border-[var(--color-text-muted)] focus:border-[#c8975c] focus:ring-2 focus:ring-[#c8975c]/15";
-
-function Field({ label, ...props }: { label: string } & InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <label className="flex flex-col gap-1">
-      <span className="text-[11px] font-medium tracking-wide text-[var(--color-text-muted)]">{label}</span>
-      <input className={INPUT_CLASS} {...props} />
-    </label>
-  );
-}
+import { Field } from "./FormField";
 
 export function ProfileEditor({ rootPath }: { rootPath: string }) {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -56,7 +42,7 @@ export function ProfileEditor({ rootPath }: { rootPath: string }) {
         className="group flex w-full items-center gap-2 px-3 py-2.5 text-left transition-transform active:scale-[0.99]"
         onClick={() => setExpanded((v) => !v)}
       >
-        <UserCircleIcon size={14} className="shrink-0 text-[var(--color-text-muted)]" />
+        <UserCircleIcon size={14} className="shrink-0 text-[var(--icon-sage)]" />
         {/* Deliberately NOT the uppercase/tracking-wide label style the other sidebar section
             headers use (Slash Commands, Portfolio, etc.) — this shows the user's own name, and
             shouting someone's name in small caps reads cold, not affirming. */}

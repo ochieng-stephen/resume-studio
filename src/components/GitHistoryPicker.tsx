@@ -42,7 +42,7 @@ export function GitHistoryPicker() {
       }),
       invoke<string>("read_text_file", { path: targetPath }),
     ]);
-    openDiffTab(`${entry.date} — ${entry.message}`, oldContent, "Current", currentContent);
+    openDiffTab(`${entry.date}: ${entry.message}`, oldContent, "Current", currentContent);
     close();
   };
 
@@ -63,7 +63,7 @@ export function GitHistoryPicker() {
             <div className="px-3 py-3 text-xs text-[var(--color-text-muted)]">
               {error.includes("not available")
                 ? "Git is not installed on this system."
-                : "No snapshot history yet — use Save Snapshot (⌘K) first."}
+                : "No snapshot history yet. Use Save Snapshot (⌘K) first."}
             </div>
           )}
           {!error && entries === null && (

@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { Field } from "./FormField";
 
 interface PromptModalProps {
   title: string;
+  label?: string;
   placeholder?: string;
   confirmLabel?: string;
   onSubmit: (value: string) => void;
@@ -12,7 +14,7 @@ interface PromptModalProps {
  * Tauri's macOS webview doesn't implement window.prompt() (alert/confirm work,
  * prompt silently no-ops), so any text-entry prompt needs its own modal.
  */
-export function PromptModal({ title, placeholder, confirmLabel = "Create", onSubmit, onCancel }: PromptModalProps) {
+export function PromptModal({ title, label = "Name", placeholder, confirmLabel = "Create", onSubmit, onCancel }: PromptModalProps) {
   const [value, setValue] = useState("");
 
   const submit = () => {
@@ -29,10 +31,11 @@ export function PromptModal({ title, placeholder, confirmLabel = "Create", onSub
         <div className="border-b border-[var(--color-border)] px-3 py-2 text-xs font-medium text-[var(--color-text)]">
           {title}
         </div>
-        <div className="flex flex-col gap-2 p-3">
-          <input
+        <div className="flex flex-col gap-3 p-3">
+          <Field
+            label={label}
+            required
             autoFocus
-            className="rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
             placeholder={placeholder}
             value={value}
             onChange={(e) => setValue(e.target.value)}

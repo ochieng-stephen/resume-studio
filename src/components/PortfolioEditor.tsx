@@ -12,9 +12,14 @@ import {
 import { launchAgentAndSend } from "../lib/agentBridge";
 import { DrawerPull } from "./DrawerPull";
 import { TagListInput } from "./TagListInput";
+import { Field, TextareaField } from "./FormField";
 
-// Warm amber selection accent (calm, not the app's electric blue) for the mood of this panel.
-const SELECT = "#c8975c";
+// Selection accent for a clicked portfolio card. Theme-aware via the shared icon-hover token:
+// warm amber in light mode, the walnut --color-accent in dark mode — so the highlight matches the
+// rest of the app's dark-mode accent instead of staying amber. SELECT_GLOW is the same colour at
+// ~60% for the soft drop shadow (can't just append an alpha hex to a CSS var).
+const SELECT = "var(--color-icon-hover)";
+const SELECT_GLOW = "var(--color-icon-hover-glow)";
 
 // The card is 168px wide with a 1px border and 10px of horizontal padding around the title.
 // WebKit (Tauri's macOS webview) can let flex items grow past their intended width instead of
@@ -111,7 +116,7 @@ export function PortfolioEditor({ rootPath }: { rootPath: string }) {
         className="group flex w-full items-center gap-2 px-3 py-2.5 text-left transition-transform active:scale-[0.99]"
         onClick={() => setExpanded((v) => !v)}
       >
-        <StackIcon size={14} className="shrink-0 text-[var(--color-text-muted)]" />
+        <StackIcon size={14} className="shrink-0 text-[var(--icon-sage)]" />
         <span className="flex-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
           Portfolio
         </span>
@@ -148,8 +153,11 @@ export function PortfolioEditor({ rootPath }: { rootPath: string }) {
           ) : (
             <>
               {/* Card carousel — each project's unclicked state */}
+              {/* pt-1.5 gives the cards headroom inside this scroll container: overflow-x-auto
+                  also clips the vertical axis, so without it a selected card's 1px accent ring and
+                  its top edge get shaved off against the container's top. */}
               <div
-                className="flex gap-2.5 overflow-x-auto pb-1.5"
+                className="flex gap-2.5 overflow-x-auto pt-1.5 pb-1.5"
                 style={{ scrollSnapType: "x mandatory" }}
               >
                 {portfolio.items.map((item, index) => {
@@ -167,11 +175,11 @@ export function PortfolioEditor({ rootPath }: { rootPath: string }) {
                         selected
                           ? {
                               borderColor: SELECT,
-                              boxShadow: `0 0 0 1px ${SELECT}, 0 8px 20px -8px ${SELECT}99`,
+                              boxShadow: `0 0 0 1px ${SELECT}, 0 8px 20px -8px ${SELECT_GLOW}`,
                             }
                           : undefined
                       }
-                      className="flex w-[168px] min-w-0 shrink-0 snap-start flex-col overflow-hidden rounded-[14px] border border-[var(--color-border)] bg-[var(--color-bg)] text-left transition hover:translate-y-0.5 hover:border-[var(--color-text-muted)]"
+                      className="flex w-[168px] min-w-0 shrink-0 snap-start flex-col overflow-hidden rounded-[14px] border border-[var(--color-border)] bg-[var(--color-bg)] text-left transition duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-[var(--color-text-muted)]"
                     >
                       {/* A slim identity band, not a thumbnail — most users won't upload cover
                           art, so the space goes to the title instead of a decorative hero image. */}
@@ -246,41 +254,55 @@ export function PortfolioEditor({ rootPath }: { rootPath: string }) {
 
               {/* Editor for the selected project, in place below the carousel */}
               {editing && editingIndex !== null && (
-                <div
-                  className="flex flex-col gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] p-2"
-                  style={{ borderTop: `2px solid ${SELECT}` }}
-                >
-                  <input
-                    className="rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-                    placeholder="Title (e.g. Checkout redesign, -22% abandonment)"
+                <div className="relative isolate flex flex-col gap-3 overflow-hidden rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] p-2.5">
+                  {/* Selected-project accent — deliberately NOT a flat strip. A hairline that
+                      fades to nothing at both ends, with a soft bloom of accent light pooling at
+                      its centre: a "lit seam", like a thread with a bead of light on it. Calm and
+                      a touch special, for someone looking over their own achievements. Both layers
+                      sit behind the fields (-z-10 within an isolated stacking context) and are
+                      theme-aware via the icon-hover token (warm amber in light, walnut in dark). */}
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-6"
+                    style={{ background: `radial-gradient(60% 100% at 50% 0%, ${SELECT_GLOW} 0%, transparent 75%)` }}
+                  />
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px"
+                    style={{ background: `linear-gradient(to right, transparent 8%, ${SELECT} 50%, transparent 92%)` }}
+                  />
+                  <Field
+                    label="Title"
+                    placeholder="e.g. Checkout redesign, -22% abandonment"
                     value={editing.title}
                     onChange={(e) => updateItem(editingIndex, { title: e.target.value })}
                   />
                   <div className="grid grid-cols-2 gap-2">
-                    <input
-                      className="rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-                      placeholder="Role"
+                    <Field
+                      label="Role"
+                      placeholder="e.g. Product Designer"
                       value={editing.role}
                       onChange={(e) => updateItem(editingIndex, { role: e.target.value })}
                     />
-                    <input
-                      className="rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-                      placeholder="Org / client"
+                    <Field
+                      label="Org / client"
+                      placeholder="e.g. Acme Corp"
                       value={editing.org}
                       onChange={(e) => updateItem(editingIndex, { org: e.target.value })}
                     />
-                    <input
-                      className="col-span-2 rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-                      placeholder="Date (e.g. 2024-03)"
-                      value={editing.date}
-                      onChange={(e) => updateItem(editingIndex, { date: e.target.value })}
-                    />
                   </div>
-                  <textarea
-                    className="min-h-[48px] resize-y rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-                    placeholder="What you did (1-3 sentences)"
+                  <Field
+                    label="Date"
+                    placeholder="e.g. 2024-03"
+                    value={editing.date}
+                    onChange={(e) => updateItem(editingIndex, { date: e.target.value })}
+                  />
+                  <TextareaField
+                    label="What you did"
+                    placeholder="1-3 sentences on what you did"
                     value={editing.summary}
                     onChange={(e) => updateItem(editingIndex, { summary: e.target.value })}
+                    rows={2}
                   />
                   <TagListInput
                     label="Outcomes (what changed)"

@@ -6,7 +6,7 @@ import {
   ListChecksIcon,
   MagicWandIcon,
   MagnifyingGlassIcon,
-  RocketIcon,
+  RocketLaunchIcon,
   StackIcon,
   TerminalWindowIcon,
   type Icon,
@@ -24,7 +24,7 @@ const COMMAND_ICONS: Record<string, Icon> = {
   "/cover-letter": EnvelopeIcon,
   "/portfolio": StackIcon,
   "/strategy": CompassIcon,
-  "/autopilot": RocketIcon,
+  "/autopilot": RocketLaunchIcon,
   "/tracker": ListChecksIcon,
 };
 
@@ -42,7 +42,7 @@ export function SlashCommandGuide() {
         className="group flex w-full items-center gap-2 px-3 py-2.5 text-left transition-transform active:scale-[0.99]"
         onClick={() => setExpanded((v) => !v)}
       >
-        <TerminalWindowIcon size={14} className="shrink-0 text-[var(--color-text-muted)]" />
+        <TerminalWindowIcon size={14} className="shrink-0 text-[var(--icon-ochre)]" />
         <span className="flex-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
           Slash Commands
         </span>
@@ -74,11 +74,14 @@ export function SlashCommandGuide() {
                   className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md"
                   style={
                     flagship
-                      ? { background: "#c8975c26", color: "#c8975c" }
+                      ? {
+                          background: "color-mix(in srgb, var(--icon-ochre) 15%, transparent)",
+                          color: "var(--icon-ochre)",
+                        }
                       : { background: "var(--color-bg-tertiary)", color: "var(--color-text-muted)" }
                   }
                 >
-                  <Icon size={13} weight={flagship ? "duotone" : undefined} />
+                  <Icon size={13} />
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[11.5px] font-medium leading-snug text-[var(--color-text)]">
@@ -101,7 +104,7 @@ export function SlashCommandGuide() {
             );
           })}
           <p className="px-2 pt-1.5 text-[10px] leading-snug text-[var(--color-text-muted)]">
-            Click a command to try it — fill in the details in the terminal, then press Enter to run it.
+            Click a command to try it. Fill in the details in the terminal, then press Enter to run it.
           </p>
         </div>
         </div>

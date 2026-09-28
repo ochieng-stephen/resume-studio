@@ -57,7 +57,7 @@ export function Sidebar() {
                 Simple
               </button>
               <button
-                title="Advanced view — browse raw workspace files"
+                title="Advanced view: browse raw workspace files"
                 onClick={() => setMode("advanced")}
                 className={`rounded-full px-2 py-0.5 text-[10px] ${
                   mode === "advanced"

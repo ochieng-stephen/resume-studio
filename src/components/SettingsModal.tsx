@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSettingsModalStore } from "../store/settingsModalStore";
 import { ThemeSetting, useSettingsStore } from "../store/settingsStore";
+import { INPUT_CLASS } from "./FormField";
 
 const SHORTCUTS: { keys: string; action: string }[] = [
   { keys: "⌘K", action: "Agent action palette" },
@@ -117,7 +118,7 @@ export function SettingsModal() {
               ))}
               <div className="flex gap-1.5">
                 <input
-                  className="flex-1 rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
+                  className={`flex-1 ${INPUT_CLASS}`}
                   placeholder="Add a command, e.g. codex"
                   value={newPreset}
                   onChange={(e) => setNewPreset(e.target.value)}

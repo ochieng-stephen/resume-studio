@@ -30,7 +30,7 @@ export function TagListInput({
       <label className="mb-1 block text-[11px] font-medium tracking-wide text-[var(--color-text-muted)]">
         {label}
       </label>
-      <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-1.5 transition-colors hover:border-[var(--color-text-muted)] focus-within:border-[#c8975c] focus-within:ring-2 focus-within:ring-[#c8975c]/15">
+      <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-1.5 transition-colors hover:border-[var(--color-text-muted)] focus-within:border-[var(--color-icon-hover)] focus-within:ring-2 focus-within:ring-[var(--color-icon-hover)]/15">
         {values.map((v) => (
           <span
             key={v}

@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useWorkspaceStore } from "../store/workspaceStore";
 import { DirEntryInfo, listCvCandidates } from "../lib/cvCandidates";
 import { AtsResult, checkAtsMatch } from "../lib/atsMatch";
+import { SelectField, TextareaField } from "./FormField";
 
 export function AtsCheckerView() {
   const rootPath = useWorkspaceStore((s) => s.rootPath);
@@ -53,28 +54,26 @@ export function AtsCheckerView() {
     <div className="flex flex-1 flex-col gap-3 overflow-auto p-4">
       <h2 className="text-sm font-semibold text-[var(--color-text)]">ATS Match Checker</h2>
       <p className="text-xs text-[var(--color-text-muted)]">
-        Local keyword matching, no AI — approximates how an applicant-tracking system scans your
+        Local keyword matching, no AI. It approximates how an applicant-tracking system scans your
         resume against a job description.
       </p>
 
-      <div className="flex items-center gap-2">
-        <span className="text-xs text-[var(--color-text-muted)]">Resume:</span>
-        <select
-          className="rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-          value={selectedPath}
-          onChange={(e) => setSelectedPath(e.target.value)}
-        >
-          {candidates.length === 0 && <option value="">No CV/resume files found</option>}
-          {candidates.map((c) => (
-            <option key={c.path} value={c.path}>
-              {rootPath ? c.path.replace(`${rootPath}/`, "") : c.path}
-            </option>
-          ))}
-        </select>
-      </div>
+      <SelectField
+        label="Resume"
+        value={selectedPath}
+        onChange={(e) => setSelectedPath(e.target.value)}
+      >
+        {candidates.length === 0 && <option value="">No CV/resume files found</option>}
+        {candidates.map((c) => (
+          <option key={c.path} value={c.path}>
+            {rootPath ? c.path.replace(`${rootPath}/`, "") : c.path}
+          </option>
+        ))}
+      </SelectField>
 
-      <textarea
-        className="min-h-[140px] rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] p-2 text-xs outline-none"
+      <TextareaField
+        label="Job description"
+        rows={6}
         placeholder="Paste the job description here…"
         value={jobDescription}
         onChange={(e) => setJobDescription(e.target.value)}
@@ -133,7 +132,7 @@ export function AtsCheckerView() {
               ))}
               {result.missing.length === 0 && (
                 <span className="text-[11px] text-[var(--color-text-muted)]">
-                  Nothing missing — great coverage
+                  Nothing missing, great coverage
                 </span>
               )}
             </div>

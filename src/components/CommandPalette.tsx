@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { INPUT_CLASS } from "./FormField";
 import {
   BriefcaseIcon,
   FileMagnifyingGlassIcon,
@@ -6,8 +7,8 @@ import {
   EnvelopeIcon,
   MagnifyingGlassIcon,
   NotePencilIcon,
-  RocketIcon,
-  SparkleIcon,
+  RocketLaunchIcon,
+  CardsThreeIcon,
   TableIcon,
   TrendUpIcon,
 } from "@phosphor-icons/react";
@@ -69,7 +70,7 @@ const ACTIONS: Action[] = [
     id: "autopilot",
     label: "Autopilot",
     description: "Fully autonomous search → tailor → apply pipeline",
-    icon: RocketIcon,
+    icon: RocketLaunchIcon,
     needsInput: true,
     placeholder: 'Optional scope, e.g. "5 backend roles"',
     run: (input) => sendToAgent(input.trim() ? `/autopilot ${input.trim()}` : "/autopilot"),
@@ -102,7 +103,7 @@ const ACTIONS: Action[] = [
     id: "snippets",
     label: "Snippet Library",
     description: "Reusable, quantified bullet points",
-    icon: SparkleIcon,
+    icon: CardsThreeIcon,
     needsInput: false,
     run: () => useTabsStore.getState().openSnippetsTab(),
   },
@@ -137,6 +138,23 @@ const ACTIONS: Action[] = [
     },
   },
 ];
+
+// Icon tone per action, from the same walnut-anchored triad as the sidebar, kept consistent so a
+// given action reads the same colour wherever it appears (Tailor is plum here and in the sidebar).
+// Gold/ochre = the walnut-family default, sage = analysis, plum = the AI / flagship actions.
+const ACTION_TONE: Record<string, string> = {
+  search: "var(--icon-ochre)",
+  tailor: "var(--icon-plum)",
+  "cover-letter": "var(--icon-gold)",
+  strategy: "var(--icon-sage)",
+  autopilot: "var(--icon-plum)",
+  tracker: "var(--icon-gold)",
+  ats: "var(--icon-sage)",
+  "capture-job": "var(--icon-ochre)",
+  snippets: "var(--icon-plum)",
+  "search-files": "var(--icon-ochre)",
+  snapshot: "var(--icon-gold)",
+};
 
 export function CommandPalette() {
   const open = usePaletteStore((s) => s.open);
@@ -194,7 +212,11 @@ export function CommandPalette() {
                   }
                 }}
               >
-                <action.icon size={15} className="shrink-0 text-[var(--color-text-muted)]" />
+                <action.icon
+                  size={15}
+                  className="shrink-0"
+                  style={{ color: ACTION_TONE[action.id] ?? "var(--color-text-muted)" }}
+                />
                 <div>
                   <div className="text-xs font-medium text-[var(--color-text)]">{action.label}</div>
                   <div className="text-[11px] text-[var(--color-text-muted)]">
@@ -207,12 +229,12 @@ export function CommandPalette() {
         ) : (
           <div className="p-3">
             <div className="mb-2 flex items-center gap-2 text-xs font-medium text-[var(--color-text)]">
-              <selected.icon size={14} />
+              <selected.icon size={14} style={{ color: ACTION_TONE[selected.id] ?? "var(--color-text-muted)" }} />
               {selected.label}
             </div>
             <input
               autoFocus
-              className="w-full rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1.5 text-xs outline-none"
+              className={`w-full ${INPUT_CLASS}`}
               placeholder={selected.placeholder}
               value={input}
               onChange={(e) => setInput(e.target.value)}

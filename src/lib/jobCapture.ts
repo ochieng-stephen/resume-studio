@@ -21,7 +21,7 @@ export function buildJobCaptureFile(
 ): { filename: string; content: string } {
   const filename = `${slugify(input.company)}-${slugify(input.role)}-${date}.md`;
   const lines = [
-    `# ${input.role} — ${input.company}`,
+    `# ${input.role} at ${input.company}`,
     "",
     `- **Company**: ${input.company}`,
     `- **Role**: ${input.role}`,

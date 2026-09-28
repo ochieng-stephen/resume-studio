@@ -7,6 +7,7 @@ import { buildJobCaptureFile } from "../lib/jobCapture";
 import { sendToAgent } from "../lib/agentBridge";
 import { rankPortfolioItems } from "../lib/atsMatch";
 import { PortfolioItem, normalizePortfolio } from "../lib/portfolio";
+import { Field, TextareaField } from "./FormField";
 
 export function JobCaptureModal() {
   const open = useJobCaptureStore((s) => s.open);
@@ -81,33 +82,36 @@ export function JobCaptureModal() {
         <div className="border-b border-[var(--color-border)] px-3 py-2 text-xs font-medium text-[var(--color-text)]">
           Capture Job Posting
         </div>
-        <div className="flex flex-col gap-2 p-3">
-          <div className="flex gap-2">
-            <input
+        <div className="flex flex-col gap-3 p-3">
+          <div className="grid grid-cols-2 gap-x-2 gap-y-3">
+            <Field
+              label="Company"
+              required
               autoFocus
-              className="flex-1 rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-              placeholder="Company *"
+              placeholder="e.g. Acme Corp"
               value={company}
               onChange={(e) => setCompany(e.target.value)}
             />
-            <input
-              className="flex-1 rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-              placeholder="Role *"
+            <Field
+              label="Role"
+              required
+              placeholder="e.g. Senior Product Designer"
               value={role}
               onChange={(e) => setRole(e.target.value)}
             />
           </div>
-          <input
-            className="rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
-            placeholder="Source URL (optional)"
+          <Field
+            label="Source URL"
+            placeholder="https://… (optional)"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
           />
-          <textarea
-            className="min-h-[160px] rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
+          <TextareaField
+            label="Job description"
             placeholder="Paste the job description…"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            rows={7}
           />
           {matches.length > 0 && (
             <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] p-2">

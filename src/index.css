@@ -32,6 +32,18 @@
      reused in every component. */
   --color-icon-hover: #c8975c;
   --color-icon-hover-glow: color-mix(in srgb, #c8975c 60%, transparent);
+  /* Triadic icon accent palette, anchored on the app's OWN theme accent — the walnut hue (~39 deg,
+     from --color-accent / the cabinet), not the amber hover token — with its two triadic partners
+     120 deg around the wheel: a muted sage-green (~160 deg) and a dusty plum (~276 deg). The
+     walnut/gold family stays the dominant share of the icons (~60%), sage secondary (~25%), plum
+     the rare accent (~15%) reserved for the "special / AI" icons (Tailored, Snippets). Enriched in
+     saturation from the pale accent so the icons actually add vibrance, but kept earthy so it
+     still reads calm and dignified. Deeper here for contrast on the cream cabinet; lighter in dark
+     mode. Directional carets are intentionally left OUT of this palette. */
+  --icon-gold: #b98a3c;
+  --icon-ochre: #a5762f;
+  --icon-sage: #4f8071;
+  --icon-plum: #7d5f92;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -63,6 +75,11 @@
        sync automatically if that token's dark value ever changes. */
     --color-icon-hover: var(--color-accent);
     --color-icon-hover-glow: color-mix(in srgb, var(--color-accent) 60%, transparent);
+    /* Lighter, more luminous triad legs so they read against the near-black chrome. */
+    --icon-gold: #ddb265;
+    --icon-ochre: #cea450;
+    --icon-sage: #92b6a8;
+    --icon-plum: #b79ecb;
   }
 }
 
@@ -81,6 +98,10 @@
   --shadow-cabinet: inset 0 1px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.04);
   --color-icon-hover: var(--color-accent);
   --color-icon-hover-glow: color-mix(in srgb, var(--color-accent) 60%, transparent);
+  --icon-gold: #ddb265;
+  --icon-ochre: #cea450;
+  --icon-sage: #92b6a8;
+  --icon-plum: #b79ecb;
 }
 
 :root[data-theme="light"] {
@@ -96,6 +117,10 @@
   --shadow-cabinet: inset 0 1px 2px rgba(0, 0, 0, 0.12);
   --color-icon-hover: #c8975c;
   --color-icon-hover-glow: color-mix(in srgb, #c8975c 60%, transparent);
+  --icon-gold: #b98a3c;
+  --icon-ochre: #a5762f;
+  --icon-sage: #4f8071;
+  --icon-plum: #7d5f92;
 }
 
 html,

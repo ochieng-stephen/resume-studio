@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useWorkspaceStore } from "../store/workspaceStore";
 import { useTabsStore } from "../store/tabsStore";
 import { useEditorScrollStore } from "../store/editorScrollStore";
+import { INPUT_CLASS } from "./FormField";
 
 interface SearchMatch {
   path: string;
@@ -60,7 +61,7 @@ export function GlobalSearchView() {
       <div className="border-b border-[var(--color-border)] p-3">
         <input
           autoFocus
-          className="w-full rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1.5 text-xs outline-none"
+          className={`w-full ${INPUT_CLASS}`}
           placeholder="Search across all files in the workspace…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}

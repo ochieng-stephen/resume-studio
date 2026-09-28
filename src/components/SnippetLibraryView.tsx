@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { CopyIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import { useWorkspaceStore } from "../store/workspaceStore";
 import { Snippet, SnippetLibrary, emptySnippetLibrary } from "../lib/snippets";
+import { INPUT_CLASS } from "./FormField";
 
 export function SnippetLibraryView() {
   const rootPath = useWorkspaceStore((s) => s.rootPath);
@@ -89,14 +90,14 @@ export function SnippetLibraryView() {
 
       <div className="flex flex-col gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-3">
         <textarea
-          className="min-h-[70px] rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
+          className={`min-h-[70px] w-full resize-y ${INPUT_CLASS}`}
           placeholder='e.g. "Led migration of payments platform, cutting latency 40%"'
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
         <div className="flex gap-2">
           <input
-            className="flex-1 rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs outline-none"
+            className={`flex-1 ${INPUT_CLASS}`}
             placeholder="Tags (comma-separated)"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
