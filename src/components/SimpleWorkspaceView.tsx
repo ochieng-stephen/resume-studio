@@ -223,6 +223,8 @@ export function SimpleWorkspaceView() {
   const [jobs, setJobs] = useState<Item[]>([]);
   const [templates, setTemplates] = useState<Item[]>([]);
   const [showNewTemplate, setShowNewTemplate] = useState(false);
+  // Immediate hover tooltip for the section action buttons (the native `title` delay is too slow).
+  const [btnTip, setBtnTip] = useState<{ label: string; x: number; y: number } | null>(null);
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const load = async (root: string) => {
@@ -311,6 +313,11 @@ export function SimpleWorkspaceView() {
     openAt(path);
   };
 
+  const showTip = (label: string, e: React.MouseEvent) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    setBtnTip({ label, x: r.left + r.width / 2, y: r.bottom });
+  };
+
   return (
     <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
       <div className="rounded-md border border-[var(--color-cabinet-border)] bg-[var(--color-cabinet)] shadow-[var(--shadow-cabinet)]">
@@ -348,7 +355,8 @@ export function SimpleWorkspaceView() {
         actions={
           <>
             <button
-              title="Import CV"
+              onMouseEnter={(e) => showTip("Import CV", e)}
+              onMouseLeave={() => setBtnTip(null)}
               onClick={() => doImport("my-current-cvs")}
               className="group flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-[var(--color-text-muted)] transition-colors duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[var(--color-text)]"
             >
@@ -361,7 +369,8 @@ export function SimpleWorkspaceView() {
               </span>
             </button>
             <button
-              title="Import Resume"
+              onMouseEnter={(e) => showTip("Import Resume", e)}
+              onMouseLeave={() => setBtnTip(null)}
               onClick={() => doImport("my-current-resumes")}
               className="group flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-[var(--color-text-muted)] transition-colors duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[var(--color-text)]"
             >
@@ -395,7 +404,8 @@ export function SimpleWorkspaceView() {
         onOpen={openAt}
         actions={
           <button
-            title="Capture Job Posting"
+            onMouseEnter={(e) => showTip("Capture Job Posting", e)}
+            onMouseLeave={() => setBtnTip(null)}
             onClick={() => openJobCapture(true)}
             className="group flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-[var(--color-text-muted)] transition-colors duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[var(--color-text)]"
           >
@@ -419,7 +429,8 @@ export function SimpleWorkspaceView() {
         onOpen={openAt}
         actions={
           <button
-            title="New Template"
+            onMouseEnter={(e) => showTip("New Template", e)}
+            onMouseLeave={() => setBtnTip(null)}
             onClick={() => setShowNewTemplate(true)}
             className="group flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-[var(--color-text-muted)] transition-colors duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[var(--color-text)]"
           >
@@ -443,6 +454,19 @@ export function SimpleWorkspaceView() {
           onSubmit={createTemplate}
           onCancel={() => setShowNewTemplate(false)}
         />
+      )}
+
+      {btnTip && (
+        <div
+          className="pointer-events-none fixed z-50 whitespace-nowrap rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-[11px] text-[var(--color-text)] shadow-lg"
+          style={{
+            left: btnTip.x,
+            top: btnTip.y + 6,
+            animation: "tip-in 150ms cubic-bezier(0.16, 1, 0.3, 1) both",
+          }}
+        >
+          {btnTip.label}
+        </div>
       )}
     </div>
   );

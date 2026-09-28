@@ -123,6 +123,21 @@
   --icon-plum: #7d5f92;
 }
 
+/* Gentle tooltip entrance — fades and settles in on the same 150ms curve the buttons use, so it
+   blends with the '+' hover animation instead of popping in and stealing the eye. Keeps the -50%
+   X-centering across all keyframes; `both` fill-mode applies the start state before the first frame
+   (no flash) and holds the end state after. */
+@keyframes tip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -2px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
 html,
 body,
 #root {
