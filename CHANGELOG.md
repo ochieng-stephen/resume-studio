@@ -20,8 +20,16 @@ All notable changes to Résumé Studio are documented here. This project adheres
 - **A far more capable application tracker.** Edit any application in place; set a follow-up date
   with a one-tap next step (send a thank-you, nudge a recruiter, reply to an offer) and see
   everything that is due in a "follow-ups ready" list at the top; filter your applications by
-  what is in progress, interviewing, or an offer; and sort by company, date applied, status, or
-  follow-up. Hover any note to read it in full instantly.
+  what is to apply, in progress, interviewing, or an offer; and sort by company, date applied,
+  status, or follow-up. Hover any note to read it in full instantly.
+- **Capture feeds your tracker.** Capturing a job posting can now add it straight to a "to apply"
+  shortlist in the tracker (deduped), so you no longer re-type the same job into two places. It
+  moves into your active pipeline, and stamps its applied date, the moment you mark it applied.
+- **Keyword Match (job-description gap finder).** Renamed and reworked from the old ATS checker:
+  it shows which keywords a job post emphasizes that your resume is missing, understands short
+  skills (AI, ML, CI/CD…), multi-word skills, and common synonyms (JS = JavaScript, K8s =
+  Kubernetes), and adds a format check that flags PDF/Word parsing risks and layout issues that
+  trip up applicant-tracking systems. Framed as a tailoring aid, not a pass/fail score.
 
 ### Changed
 - The `tailor`, `cover-letter`, and `strategy` agent skills are now portfolio-aware, surfacing
